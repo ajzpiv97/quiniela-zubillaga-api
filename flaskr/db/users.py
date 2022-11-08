@@ -1,15 +1,15 @@
 import uuid
+from sqlalchemy.dialects.postgresql import UUID
 
 from sqlalchemy import Column, Integer, String
 
-from flaskr.db.base_model import BaseModel
 from flaskr.db.database import db
 
 
 class Users(db.Model):
     __tablename__ = 'tbl_users'
 
-    id = Column(String, primary_key=True, default=str(uuid.uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
