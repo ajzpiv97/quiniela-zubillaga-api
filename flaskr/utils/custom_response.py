@@ -1,24 +1,14 @@
-import json
 from typing import Optional, Dict
-
-from flask import Response, jsonify
-
-
-class CustomResponseHandler(Response):
-    @classmethod
-    def force_type(cls, rv, environ=None):
-        if isinstance(rv, dict):
-            rv = jsonify(rv)
-        return super(CustomResponseHandler, cls).force_type(rv, environ)
+from flask import jsonify
 
 
-class Response:
-    def __init__(self, code: int, message: str, data: Optional[Dict] = None):
+class CustomResponse:
+    def __init__(self, message: str, data: Optional[Dict] = None, status_code: int = 200):
         if data is None:
             data = {}
-        self.code = code
         self.message = message
-        self.data = json.dumps(data)
+        self.data = data
+        self.status_code = status_code
 
-    def to_json(self) -> Dict:
-        return self.__dict__
+    def custom_jsonify(self):
+        return jsonify(message=self.message, data=self.data, status_code=self.status_code)

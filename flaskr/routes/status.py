@@ -1,5 +1,6 @@
-from flask import Blueprint, Flask
-from flaskr.utils.custom_response import Response
+from flask import Blueprint, Flask, Response, jsonify
+
+from flaskr.utils.custom_response import CustomResponse
 
 bp = Blueprint('status', __name__, url_prefix='/')
 
@@ -8,7 +9,7 @@ app = Flask(__name__)
 
 @bp.route('/', methods=['GET'])
 def status():
-    response = Response(code=200, message='up')
-    return response.to_json()
+    response = CustomResponse(message='up')
+    return response.custom_jsonify()
 
 
