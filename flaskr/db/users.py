@@ -3,12 +3,13 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from sqlalchemy import Column, Integer, String, LargeBinary
 
-from flaskr.utils.extensions import db
+from flaskr.db.base_model import Model
 
 
-class Users(db.Model):
+class Users(Model):
+    """Users"""
+
     __tablename__ = 'tbl_users'
-
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
@@ -16,16 +17,12 @@ class Users(db.Model):
     password = Column(LargeBinary, nullable=False)
     total_points = Column(Integer, default=None, nullable=True)
 
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
+    def __init__(self, **kwargs):
+        """Create instance."""
+        super().__init__(**kwargs)
 
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    @staticmethod
-    def update():
-        db.session.commit()
+    def __repr__(self):
+        """Represent instance as a unique string."""
+        return f"<Users({self.email})>"
 
 
