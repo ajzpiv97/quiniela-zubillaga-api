@@ -3,7 +3,7 @@ import os
 from flask import Flask, request
 from flask_cors import CORS
 from flaskr.middleware.middleware import ContentTypeMiddleware
-from flaskr.routes import auth
+from flaskr.routes import auth, status
 from flaskr.utils.custom_response import CustomResponseHandler
 from flaskr.utils.error_handler import error_handler
 
@@ -20,6 +20,7 @@ def create_app():
     app.response_class = CustomResponseHandler
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(status.bp)
     app.wsgi_app = ContentTypeMiddleware(app.wsgi_app)
     CORS(app, resources=r'/*')
     error_handler(app)
