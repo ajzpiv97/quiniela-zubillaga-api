@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from sqlalchemy import Column, Integer, String, LargeBinary
 
-from flaskr.db.database import db
+from flaskr.utils.extensions import db
 
 
 class Users(db.Model):

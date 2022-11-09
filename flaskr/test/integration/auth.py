@@ -1,34 +1,25 @@
-import os
 import unittest
 
 import json
 
-from flask_bcrypt import Bcrypt
-from flask_sqlalchemy import SQLAlchemy
-
-from app import create_app
-from flaskr.db.database import setup_db
+from flaskr.app import create_app
 from flaskr.db.users import Users
+from flaskr.utils.extensions import db, bcrypt
 
 
 class AuthTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
-    db: SQLAlchemy
     app = create_app()
-    flask_bcrypt = Bcrypt(app)
 
     @classmethod
     def setUpClass(cls):
         """Define test variables and initialize app."""
-        database_path = os.environ.get('DATABASE_URL')
-        assert database_path is not None, 'Set DATABASE_URL!'
-        cls.db = setup_db(cls.app, database_path)
         cls.client = cls.app.test_client
 
         with cls.app.app_context():
-            cls.db.drop_all()
-            cls.db.create_all()
-            password_hash = cls.flask_bcrypt.generate_password_hash('1234')
+            db.drop_all()
+            db.create_all()
+            password_hash = bcrypt.generate_password_hash('1234')
 
             new_user = Users(email='test@gmail.com',
                              name='Test', last_name='Test',
@@ -93,4 +84,4 @@ class AuthTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         with cls.app.app_context():
-            cls.db.drop_all()
+            db.drop_all()

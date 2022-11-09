@@ -1,7 +1,7 @@
+import logging
 import re
 import sqlalchemy.exc
-from flask import Blueprint, Flask
-from flask_bcrypt import Bcrypt
+from flask import Blueprint
 from flask_pydantic import validate
 from pydantic import BaseModel, Field, validator
 from werkzeug.exceptions import Unauthorized
@@ -10,12 +10,11 @@ from flaskr.db.users import Users
 from flaskr.utils.custom_response import CustomResponse
 from flaskr.utils.error_handler import custom_abort
 from flaskr.utils.jwt_generation import generate_jwt
+from flaskr.utils.extensions import bcrypt
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-app = Flask(__name__, instance_relative_config=True)
-
-flask_bcrypt = Bcrypt(app)
+logger = logging.getLogger(__name__)
 
 
 class RegisterBody(BaseModel):
@@ -47,17 +46,17 @@ class LoginBody(BaseModel):
 @validate(body=RegisterBody)
 def register(body: RegisterBody):
     try:
-        password_hash = flask_bcrypt.generate_password_hash(body.password)
+        password_hash = bcrypt.generate_password_hash(body.password)
         new_user = Users(email=body.email,
                          name=body.name, last_name=body.last_name,
                          password=password_hash)
         new_user.insert()
-        app.logger.info('User successfully created!')
+        logger.info('User successfully created!')
         response = CustomResponse(message='Usuario fue creado exitosamente', status_code=201)
         return response.custom_jsonify()
     except sqlalchemy.exc.IntegrityError as e:
         error = Exception('Usuario ya existe! Usa otro correo electronico')
-        app.logger.exception(e)
+        logger.exception(e)
         custom_abort(400, error)
 
 
@@ -69,7 +68,7 @@ def login(body: LoginBody):
         find_user = Users.query.filter_by(email=body.email).first()
         if find_user is None:
             raise Exception('Usuario no esta registrado!')
-        check_if_passwords_match = flask_bcrypt.check_password_hash(find_user.password, body.password)
+        check_if_passwords_match = bcrypt.check_password_hash(find_user.password, body.password)
         if check_if_passwords_match:
             jwt = generate_jwt(str(find_user.id))
             return CustomResponse(message='Iniciando sesión!', data={'token': jwt}).custom_jsonify()
@@ -77,11 +76,11 @@ def login(body: LoginBody):
         raise Unauthorized(description='La contraseña ingresada no es correct!')
 
     except Unauthorized as e:
-        app.logger.exception(e)
+        logger.exception(e)
         custom_abort(401, e)
 
     except Exception as e:
-        app.logger.exception(e)
+        logger.exception(e)
         custom_abort(400, e)
 
 
