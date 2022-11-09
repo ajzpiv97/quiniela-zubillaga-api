@@ -1,4 +1,5 @@
 import re
+import sqlalchemy.exc
 from flask import Blueprint, Flask
 from flask_pydantic import validate
 from pydantic import BaseModel, Field, validator
@@ -43,7 +44,7 @@ def register(body: RegisterBody):
         response = Response(code=201, message='success')
         app.logger.info('User successfully created!')
         return response.to_json()
-    except Exception as e:
+    except sqlalchemy.exc.IntegrityError as e:
         error = Exception('Usuario ya existe! Usa otro correo electronico')
         app.logger.exception(e)
         custom_abort(400, error)
