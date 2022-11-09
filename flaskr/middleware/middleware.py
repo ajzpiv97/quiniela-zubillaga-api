@@ -1,12 +1,15 @@
 import json
+from typing import Dict
+
+from flask import Flask
 from werkzeug.wrappers import Request, Response
 
 
 class ContentTypeMiddleware(object):
-    def __init__(self, app):  # pragma: no cover
+    def __init__(self, app: Flask.wsgi_app):  # pragma: no cover
         self.app = app
 
-    def __call__(self, environ, start_response):
+    def __call__(self, environ: Dict, start_response):
         request = Request(environ)
         headers = request.headers
 
@@ -19,12 +22,12 @@ class ContentTypeMiddleware(object):
                 return self.app(environ, start_response)
 
         result = json.dumps({'result': 'Requests must contain content-type application/json'})
-        res = Response(result, content_type='application/json; charset=utf-8')
+        response = Response(result, content_type='application/json; charset=utf-8')
 
-        res.headers.add("Access-Control-Allow-Origin", "*")
-        res.headers.add('Access-Control-Allow-Headers', "*")
-        res.headers.add('Access-Control-Allow-Methods', "*")
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add('Access-Control-Allow-Headers', "*")
+        response.headers.add('Access-Control-Allow-Methods', "*")
 
-        res.status_code = 403
+        response.status_code = 403
 
-        return res(environ, start_response)
+        return response(environ, start_response)

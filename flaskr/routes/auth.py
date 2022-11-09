@@ -1,10 +1,17 @@
+import logging
 import re
-
-from flask import Blueprint, jsonify
+import sqlalchemy.exc
+from flask import Blueprint, abort, Flask
 from flask_pydantic import validate
 from pydantic import BaseModel, Field, validator
+
 from flaskr.db.users import Users
+from flaskr.utils.custom_response import Response
+from flaskr.utils.error_handler import custom_abort
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+app = Flask(__name__)
 
 
 class RegisterBody(BaseModel):
@@ -30,11 +37,16 @@ class RegisterBody(BaseModel):
 @bp.route('/register', methods=['POST'])
 @validate(body=RegisterBody)
 def register(body: RegisterBody):
-    new_user = Users(email=body.email,
-                     name=body.name, last_name=body.last_name,
-                     password=body.password)
-    new_user.insert()
+    try:
+        new_user = Users(email=body.email,
+                         name=body.name, last_name=body.last_name,
+                         password=body.password)
+        new_user.insert()
+        response = Response(code=201, message='success')
+        app.logger.info('User successfully created!')
+        return response.to_json()
+    except sqlalchemy.exc.IntegrityError as e:
+        error = Exception('Usuario ya existe! Usa otro correo electronico')
+        app.logger.exception(e)
+        custom_abort(400, error)
 
-    return jsonify({
-                'success': True,
-            })
