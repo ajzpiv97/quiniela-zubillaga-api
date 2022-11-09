@@ -1,8 +1,10 @@
 import re
 import sqlalchemy.exc
-from flask import Blueprint, Flask, Response, jsonify
+from flask import Blueprint, Flask
+from flask_bcrypt import Bcrypt
 from flask_pydantic import validate
 from pydantic import BaseModel, Field, validator
+from werkzeug.exceptions import Unauthorized
 
 from flaskr.db.users import Users
 from flaskr.utils.custom_response import CustomResponse
@@ -11,6 +13,8 @@ from flaskr.utils.error_handler import custom_abort
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 app = Flask(__name__)
+
+flask_bcrypt = Bcrypt(app)
 
 
 class RegisterBody(BaseModel):
@@ -33,13 +37,20 @@ class RegisterBody(BaseModel):
         return email
 
 
+class LoginBody(BaseModel):
+    email: str
+    password: str = Field(min_length=3, max_length=20)
+
+
 @bp.route('/register', methods=['POST'])
 @validate(body=RegisterBody)
 def register(body: RegisterBody):
     try:
+        password_hash = flask_bcrypt.generate_password_hash(body.password)
+        print(password_hash)
         new_user = Users(email=body.email,
                          name=body.name, last_name=body.last_name,
-                         password=body.password)
+                         password=password_hash)
         new_user.insert()
         app.logger.info('User successfully created!')
         response = CustomResponse(message='Usuario fue creado exitosamente', status_code=201)
@@ -48,4 +59,30 @@ def register(body: RegisterBody):
         error = Exception('Usuario ya existe! Usa otro correo electronico')
         app.logger.exception(e)
         custom_abort(400, error)
+
+
+@bp.route('/login', methods=['POST'])
+@validate(body=LoginBody)
+def login(body: LoginBody):
+
+    try:
+        find_user = Users.query.filter_by(email=body.email).first()
+        if find_user is None:
+            raise Exception('Usuario no esta registrado!')
+        check_if_passwords_match = flask_bcrypt.check_password_hash(find_user.password, body.password)
+        if check_if_passwords_match:
+            return CustomResponse(message='Good!').custom_jsonify()
+
+        raise Unauthorized(description='La contraseña ingresada no es correct!')
+
+    except Unauthorized as e:
+        app.logger.exception(e)
+        custom_abort(401, e)
+
+    except Exception as e:
+        app.logger.exception(e)
+        custom_abort(400, e)
+
+
+
 
