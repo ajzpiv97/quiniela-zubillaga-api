@@ -42,7 +42,7 @@ def register(body: RegisterBody):
                          password=body.password)
         new_user.insert()
         app.logger.info('User successfully created!')
-        response = CustomResponse(message='message', status_code=201)
+        response = CustomResponse(message='Usuario fue creado exitosamente', status_code=201)
         return response.custom_jsonify()
     except sqlalchemy.exc.IntegrityError as e:
         error = Exception('Usuario ya existe! Usa otro correo electronico')

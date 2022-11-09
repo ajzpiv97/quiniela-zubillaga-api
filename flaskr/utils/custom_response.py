@@ -11,4 +11,4 @@ class CustomResponse:
         self.status_code = status_code
 
     def custom_jsonify(self):
-        return jsonify(message=self.message, data=self.data, status_code=self.status_code)
+        return jsonify(message=self.message, data=self.data), self.status_code

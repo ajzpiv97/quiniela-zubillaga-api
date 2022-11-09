@@ -42,8 +42,8 @@ class AuthTestCase(unittest.TestCase):
         res = self.client().post('/auth/register',
                                  json=data, headers=header_obj)
         data = json.loads(res.data)
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['success'])
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual('Usuario fue creado exitosamente', data['message'])
 
     @classmethod
     def tearDownClass(cls) -> None:
