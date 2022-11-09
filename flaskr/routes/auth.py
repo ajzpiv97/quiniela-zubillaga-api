@@ -9,10 +9,11 @@ from werkzeug.exceptions import Unauthorized
 from flaskr.db.users import Users
 from flaskr.utils.custom_response import CustomResponse
 from flaskr.utils.error_handler import custom_abort
+from flaskr.utils.jwt_generation import generate_jwt
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 
 flask_bcrypt = Bcrypt(app)
 
@@ -47,7 +48,6 @@ class LoginBody(BaseModel):
 def register(body: RegisterBody):
     try:
         password_hash = flask_bcrypt.generate_password_hash(body.password)
-        print(password_hash)
         new_user = Users(email=body.email,
                          name=body.name, last_name=body.last_name,
                          password=password_hash)
@@ -71,7 +71,8 @@ def login(body: LoginBody):
             raise Exception('Usuario no esta registrado!')
         check_if_passwords_match = flask_bcrypt.check_password_hash(find_user.password, body.password)
         if check_if_passwords_match:
-            return CustomResponse(message='Good!').custom_jsonify()
+            jwt = generate_jwt(str(find_user.id))
+            return CustomResponse(message='Iniciando sesión!', data={'token': jwt}).custom_jsonify()
 
         raise Unauthorized(description='La contraseña ingresada no es correct!')
 

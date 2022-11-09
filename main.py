@@ -1,6 +1,6 @@
 import os
 
-from app import create_app
+from flaskr import create_app
 from flaskr.db.database import setup_db
 
 app = create_app()
