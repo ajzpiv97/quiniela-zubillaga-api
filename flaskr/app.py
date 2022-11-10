@@ -15,7 +15,7 @@ def create_app():
     setup_configs(app)
     register_extensions(app)
     register_blueprints(app)
-    register_errorhandlers(app)
+    register_error_handlers(app)
     configure_logger(app)
     register_middleware(app)
     return app
@@ -41,7 +41,7 @@ def register_blueprints(app):
     app.register_blueprint(status.bp)
 
 
-def register_errorhandlers(app):
+def register_error_handlers(app):
     """Register error handlers."""
     error_handler(app)
 
