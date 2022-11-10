@@ -2,10 +2,11 @@ import os
 from datetime import datetime, timedelta
 import jwt
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'api')
 
 
-def generate_jwt(user_id: str, expiration_time: int = 45) -> str:
+def generate_jwt(user_id: str, expiration_time: int = 15) -> str:
     token = jwt.encode(
         {'id': user_id, 'expiration_date': str(datetime.utcnow() + timedelta(minutes=expiration_time))},
         SECRET_KEY, "HS256")
