@@ -5,6 +5,7 @@ from flask_pydantic import validate
 from werkzeug.exceptions import Unauthorized
 
 from flaskr.db.users import Users
+from flaskr.db.games import Games
 from flaskr.models.models import RegisterBody, LoginBody
 from flaskr.utils.custom_response import CustomResponse
 from flaskr.utils.error_handler import custom_abort

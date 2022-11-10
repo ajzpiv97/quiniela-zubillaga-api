@@ -4,7 +4,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from flaskr.middleware.middleware import ContentTypeMiddleware
 from flaskr.utils.error_handler import error_handler
-from flaskr.utils.extensions import bcrypt, db
+from flaskr.utils.extensions import bcrypt, db, migrate
 from flaskr.utils.utils import modify_database_url_to_add_dialect
 
 
@@ -31,6 +31,7 @@ def setup_configs(app):
 def register_extensions(app):
     """Register Flask extensions."""
     bcrypt.init_app(app)
+    migrate.init_app(app, db)
     db.init_app(app)
 
 
