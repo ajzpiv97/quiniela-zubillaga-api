@@ -37,9 +37,10 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
-    from flaskr.routes import auth, status
+    from flaskr.routes import auth, status,user_actions
     app.register_blueprint(auth.bp)
     app.register_blueprint(status.bp)
+    app.register_blueprint(user_actions.bp)
 
 
 def register_error_handlers(app):
