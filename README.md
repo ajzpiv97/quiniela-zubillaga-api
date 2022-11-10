@@ -3,7 +3,7 @@
 
 Auth Done
 
-1. Route Update GAMES
+1. Route Update GAMES ADMIN 
 
 2. Route para ingresar predictions cumpliendo restrictions de hora
 

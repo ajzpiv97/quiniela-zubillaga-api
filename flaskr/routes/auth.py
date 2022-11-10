@@ -45,7 +45,7 @@ def login(body: LoginBody):
             raise Exception('Usuario no esta registrado!')
         check_if_passwords_match = bcrypt.check_password_hash(find_user.password, body.password)
         if check_if_passwords_match:
-            jwt = generate_jwt(str(find_user.id))
+            jwt = generate_jwt(str(find_user.email))
             return CustomResponse(message='Iniciando sesión!', data={'token': jwt}).custom_jsonify()
 
         raise Unauthorized(description='La contraseña ingresada no es correct!')
