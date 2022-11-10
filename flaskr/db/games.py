@@ -8,7 +8,7 @@ from flaskr.db.base_model import Model
 class Games(Model):
     """Games"""
 
-    __tablename__ = 'tbl_game'
+    __tablename__ = 'tbl_games'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     team_a = Column(String, nullable=False)
     team_b = Column(String, nullable=False)
