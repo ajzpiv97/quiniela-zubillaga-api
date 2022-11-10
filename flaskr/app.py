@@ -31,7 +31,6 @@ def setup_configs(app):
 def register_extensions(app):
     """Register Flask extensions."""
     bcrypt.init_app(app)
-    migrate.init_app(app, db)
     db.init_app(app)
 
 
