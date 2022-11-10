@@ -6,7 +6,7 @@ app = create_app()
 cli = FlaskGroup(app)
 
 
-@cli.command("db")
+@app.cli.command("db")
 def run_migration():
     migrate.init_app(app, db)
 
