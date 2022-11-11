@@ -25,7 +25,7 @@ class AuthTestCase(unittest.TestCase):
                              name='Test', last_name='File',
                              password=password_hash)
 
-            new_user.save()
+            new_user.create()
 
     def test1_create_new_user(self):
         header_obj = {

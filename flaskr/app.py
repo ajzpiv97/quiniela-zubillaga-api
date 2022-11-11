@@ -9,6 +9,7 @@ from flaskr.utils.error_handler import error_handler
 from flaskr.utils.extensions import bcrypt, db, migrate
 from flaskr.utils.utils import modify_database_url_to_add_dialect
 
+
 def create_app():
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
     """
@@ -38,7 +39,7 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
-    from flaskr.routes import auth, status,user_actions
+    from flaskr.routes import auth, status, user_actions
     app.register_blueprint(auth.bp)
     app.register_blueprint(status.bp)
     app.register_blueprint(user_actions.bp)
@@ -51,10 +52,12 @@ def register_error_handlers(app):
 
 def configure_logger(app):
     """Configure loggers."""
-    if platform == ''
-    gunicorn_logger = logging.getLogger('waitress')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    logger_type = 'gunicorn.error'
+    if platform == 'win32':
+        logger_type = 'waitress'
+    logger = logging.getLogger(logger_type)
+    app.logger.handlers = logger.handlers
+    app.logger.setLevel(logger.level)
 
 
 def register_middleware(app):

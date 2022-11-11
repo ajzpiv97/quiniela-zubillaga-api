@@ -25,7 +25,7 @@ def register(body: RegisterBody):
         new_user = Users(email=body.email,
                          name=body.name, last_name=body.last_name,
                          password=password_hash)
-        new_user.save()
+        new_user.create()
         logger.info('User successfully created!')
         response = CustomResponse(message='Usuario fue creado exitosamente', status_code=201)
         return response.custom_jsonify()

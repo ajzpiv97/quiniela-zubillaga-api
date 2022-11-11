@@ -5,11 +5,9 @@ class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD (create, read, update, delete) operations."""
     __table_args__ = {'extend_existing': True}
 
-    @classmethod
-    def create(cls, **kwargs):
+    def create(self):
         """Create a new record and save it the database."""
-        instance = cls(**kwargs)
-        return instance.save()
+        return self.save()
 
     def update(self, commit=True, **kwargs):
         """Update specific fields of a record."""

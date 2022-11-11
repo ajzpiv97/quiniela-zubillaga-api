@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from pydantic import BaseModel, Field, validator
 
@@ -33,6 +34,7 @@ class Game(BaseModel):
     team2: str
     score1: int
     score2: int
-class PredictionBody(BaseModel):
-    predictions: list[Game]
 
+
+class PredictionBody(BaseModel):
+    predictions: List[Game]
