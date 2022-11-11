@@ -32,5 +32,5 @@ def load_games(file):
     
 '''
 
-with app.app_context():
-  load_games("../../data/partidos.csv")
+# with app.app_context():
+#   load_games("../../data/partidos.csv")

@@ -24,6 +24,10 @@ class Users(Model):
 
     def __repr__(self):
         """Represent instance as a unique string."""
-        return f"<Users({self.email})>"
+        return {'email': self.email}
+
+    def __str__(self):
+        """Represent instance as a unique string."""
+        return {'email': self.email}
 
 

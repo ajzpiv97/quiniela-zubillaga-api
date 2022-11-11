@@ -19,7 +19,7 @@ class RegisterBody(BaseModel):
         :return: email value
         """
         email = value.lower()
-        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) is None:
+        if re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) is None:
             raise ValueError('Email provided is not valid!')
         return email
 
@@ -37,4 +37,4 @@ class Game(BaseModel):
 
 
 class PredictionBody(BaseModel):
-    predictions: List[Game]
+    predictions: list[Game]

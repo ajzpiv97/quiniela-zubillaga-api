@@ -7,11 +7,11 @@ from flaskr.db.base_model import Model
 class Predictions(Model):
     """Predictions"""
     __tablename__ = 'tbl_predictions'
-    user = Column(String, ForeignKey('tbl_users.email'), primary_key=True, index=True)
-    game = Column(UUID(as_uuid=True), ForeignKey('tbl_games.id'), primary_key=True, index=True)
+    user_email = Column(String, ForeignKey('tbl_users.email'), primary_key=True, index=True)
+    game_id = Column(UUID(as_uuid=True), ForeignKey('tbl_games.id'), primary_key=True, index=True)
     actual_score = Column(String, default=None)
     predicted_score = Column(String, nullable=False)
-    points = Column(Integer,default=None)
+    points = Column(Integer, default=None)
 
     def __init__(self, **kwargs):
         """Create instance."""
