@@ -1,23 +1,19 @@
 import logging
-import sqlalchemy.exc
-from flask import Blueprint,request
+from flask import Blueprint, request
 from flask_pydantic import validate
 from werkzeug.exceptions import Unauthorized
 from datetime import datetime
 from flaskr.db.games import Games
 from flaskr.db.predictions import Predictions
-from flaskr.db.base_model import  *
-from flaskr.models.models import RegisterBody, LoginBody,PredictionBody
+from flaskr.db.users import Users
+from flaskr.models.models import PredictionBody
 from flaskr.utils.custom_response import CustomResponse
 from flaskr.utils.error_handler import custom_abort
-from flaskr.utils.jwt_generation import generate_jwt,decode_jwt
-from flaskr.utils.extensions import bcrypt
+from flaskr.utils.jwt_generation import decode_jwt
 
 bp = Blueprint('user_actions', __name__, url_prefix='/user_actions')
 
 logger = logging.getLogger(__name__)
-
-
 
 # TODO
 '''
@@ -65,9 +61,9 @@ def update_predictions(body: PredictionBody):
                 new_pred.create()
                 logger.info("New prediction made by user " + str(find_user.email))
             else:
-                ##udpate
-                ## get object
-                temp_pred_obj = Predictions.query.filter_by(game=find_game.id,user=find_user.email)
+                # update
+                # get object
+                temp_pred_obj = Predictions.query.filter_by(game=find_game.id, user=find_user.email)
                 temp_pred_obj.update(predicted_score=str(game['score1'] + "-" + game['score2']))
                 logger.info("Update prediction made by user " + str(find_user.email))
 
