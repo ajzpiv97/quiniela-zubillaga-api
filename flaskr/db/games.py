@@ -1,6 +1,7 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, DateTime
+from sqlalchemy.orm import relationship
 
 from flaskr.db.base_model import Model
 
@@ -14,6 +15,7 @@ class Games(Model):
     team_b = Column(String, nullable=False)
     score = Column(String, default=None)
     date = Column(DateTime, nullable=False, index=True)
+    predictions =  relationship("Predictions")
 
     def __init__(self, **kwargs):
         """Create instance."""

@@ -2,11 +2,12 @@ import logging
 import os
 from flask import Flask, request
 from flask_cors import CORS
+from sys import platform
+
 from flaskr.middleware.middleware import ContentTypeMiddleware
 from flaskr.utils.error_handler import error_handler
 from flaskr.utils.extensions import bcrypt, db, migrate
 from flaskr.utils.utils import modify_database_url_to_add_dialect
-
 
 def create_app():
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
@@ -50,7 +51,8 @@ def register_error_handlers(app):
 
 def configure_logger(app):
     """Configure loggers."""
-    gunicorn_logger = logging.getLogger('gunicorn.error')
+    if platform == ''
+    gunicorn_logger = logging.getLogger('waitress')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 

@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, Integer, String, LargeBinary, Boolean
-
+from sqlalchemy.orm import relationship
 from flaskr.db.base_model import Model
 
 
@@ -16,6 +16,7 @@ class Users(Model):
     password = Column(LargeBinary, nullable=False)
     total_points = Column(Integer, default=None, nullable=True)
     is_admin = Column(Boolean, default=False)
+    predictions = relationship("Predictions")
 
     def __init__(self, **kwargs):
         """Create instance."""
