@@ -19,7 +19,7 @@ class Users(Model):
 
     def __init__(self, **kwargs):
         """Create instance."""
-        super().__init__(**kwargs)
+        super(Users, self).__init__(**kwargs)
 
     def __repr__(self):
         """Represent instance as a unique string."""

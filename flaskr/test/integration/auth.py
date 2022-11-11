@@ -22,10 +22,10 @@ class AuthTestCase(unittest.TestCase):
             password_hash = bcrypt.generate_password_hash('1234')
 
             new_user = Users(email='test@gmail.com',
-                             name='Test', last_name='Test',
+                             name='Test', last_name='File',
                              password=password_hash)
 
-            new_user.insert()
+            new_user.save()
 
     def test1_create_new_user(self):
         header_obj = {

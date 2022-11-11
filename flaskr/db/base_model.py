@@ -3,6 +3,7 @@ from flaskr.utils.extensions import db
 
 class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD (create, read, update, delete) operations."""
+    __table_args__ = {'extend_existing': True}
 
     @classmethod
     def create(cls, **kwargs):
