@@ -1,7 +1,7 @@
 import re
-from typing import List
 
 from pydantic import BaseModel, Field, validator
+from typing import List
 
 
 class RegisterBody(BaseModel):
