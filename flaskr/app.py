@@ -51,7 +51,7 @@ def register_error_handlers(app):
 
 def configure_logger(app):
     """Configure loggers."""
-    if platform == ''
+    ##if platform == ''
     gunicorn_logger = logging.getLogger('waitress')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
