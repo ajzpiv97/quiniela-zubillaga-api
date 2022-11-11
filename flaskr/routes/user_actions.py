@@ -70,3 +70,25 @@ def update_predictions(body: PredictionBody):
 
     return CustomResponse(message='Update successful!', status_code=201).custom_jsonify()
 
+
+
+
+"""
+#TODO 
+Make get request to send user and scores for table view
+"""
+
+@bp.route('/get-user-scores', methods=['GET'])
+def get_user_scores():
+    try:
+        logger.info("this roout works")
+
+    except Exception as e:
+        logger.exception(e)
+        logger.info("Error in get req")
+        custom_abort(400, e)
+
+    return CustomResponse(message=' successful!', status_code=201).custom_jsonify()
+
+
+
