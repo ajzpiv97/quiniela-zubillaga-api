@@ -15,7 +15,7 @@ class Games(Model):
     team_b = Column(String, nullable=False)
     score = Column(String, default=None)
     date = Column(DateTime, nullable=False, index=True)
-    predictions =  relationship("Predictions")
+    predictions = relationship("Predictions")
 
     def __init__(self, **kwargs):
         """Create instance."""
