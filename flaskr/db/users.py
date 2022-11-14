@@ -14,7 +14,7 @@ class Users(Model):
     name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     password = Column(LargeBinary, nullable=False)
-    total_points = Column(Integer, default=None, nullable=True)
+    total_points = Column(Integer, default=-1, nullable=True)
     is_admin = Column(Boolean, default=False)
     predictions = relationship("Predictions")
 

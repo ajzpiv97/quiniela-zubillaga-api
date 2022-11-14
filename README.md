@@ -11,7 +11,7 @@ Auth Done
 
 4. Function ya se cron job o ui para actualizar el score de los usuarios en base a los predicitons y los nuevos resultados
 
-5. Crear table view para ranking de puntages [{'Name': "amando", "Puntos": 50}]
+5. Crear table view para ranking de puntages [{'Name': "amando", "Puntos": 50}] Listo
 
 6. View para ver los scores 
 

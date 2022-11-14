@@ -1,5 +1,4 @@
 import logging
-import os
 from flask import Flask, request
 from flask_cors import CORS
 from sys import platform
@@ -7,7 +6,7 @@ from sys import platform
 from flaskr.middleware.middleware import ContentTypeMiddleware
 from flaskr.utils.error_handler import error_handler
 from flaskr.utils.extensions import bcrypt, db, migrate
-from flaskr.utils.utils import modify_database_url_to_add_dialect
+from flaskr.utils.env_variables import SETTING
 
 
 def create_app():
@@ -24,10 +23,7 @@ def create_app():
 
 
 def setup_configs(app):
-    app.config['TESTING'] = os.environ.get('TESTING', False)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '')
-    app.config["SQLALCHEMY_DATABASE_URI"] = modify_database_url_to_add_dialect(os.environ.get('DATABASE_URL', ''))
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config.from_object(f'flaskr.utils.config.{SETTING.lower().capitalize()}Config')
 
 
 def register_extensions(app):
