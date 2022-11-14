@@ -7,7 +7,7 @@ Auth Done
 
 2. Route para ingresar predictions cumpliendo restrictions de hora check!
 
-3. Route para devolver todas tus predictions ingresadas armando
+3. Route para devolver todas tus predictions ingresadas armando Falta Test
 
 4. Function ya se cron job o ui para actualizar el score de los usuarios en base a los predicitons y los nuevos resultados
 
