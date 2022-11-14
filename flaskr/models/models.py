@@ -37,4 +37,7 @@ class Game(BaseModel):
 
 
 class PredictionBody(BaseModel):
-    predictions: list[Game]
+    try:
+        predictions: list[Game]
+    except Exception as e:
+        print(e)
