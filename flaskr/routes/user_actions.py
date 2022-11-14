@@ -99,6 +99,7 @@ def get_ranking():
         logger.exception(e)
         custom_abort(400, e)
 
+
 # @bp.route('/get-predictions', methods=['GET'])
 # def update_predictions():
 #     try:
@@ -147,24 +148,26 @@ def get_ranking():
 #
 #     return CustomResponse(message='Update successful!', status_code=201).custom_jsonify()
 
-
-
+# TODO
 """
-#TODO 
 Make get request to send user and scores for table view
 """
 
-@bp.route('/get-user-scores', methods=['GET'])
-def get_user_scores():
-    try:
-        logger.info("this roout works")
 
+@bp.route('/get-user-predictions', methods=['GET'])
+def get_user_predictions():
+    try:
+        decoded_token, find_user = authenticate_user()
+        games = Games.query.all()
+
+        predictions_per_game = []
+        for game in games:
+            prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=games.id).all()
+            predictions_per_game.append({'TeamA': game.team_a, 'TeamB': game.team_b,
+                                         'UserPredictedScore': '' if prediction is None else prediction.predicted_score,
+                                         'ActualScore': game.score})
+
+        return CustomResponse(message='Predictions per game per user!', data=predictions_per_game).custom_jsonify()
     except Exception as e:
         logger.exception(e)
-        logger.info("Error in get req")
         custom_abort(400, e)
-
-    return CustomResponse(message=' successful!', status_code=201).custom_jsonify()
-
-
-
