@@ -1,7 +1,7 @@
 import logging
 from flask import Blueprint
 from flask_pydantic import validate
-from werkzeug.exceptions import Unauthorized, UnprocessableEntity, BadRequest
+from werkzeug.exceptions import Unauthorized, UnprocessableEntity, BadRequest, NotFound
 from flaskr.db.games import Games
 from flaskr.db.predictions import Predictions
 from flaskr.db.users import Users
@@ -56,10 +56,6 @@ def update_predictions(body: PredictionBody):
                 temp_pred_obj.update(predicted_score=f'{game.score1}-{game.score2}')
                 logger.info("Update prediction made by user " + str(find_user.email))
 
-    except Unauthorized as e:
-        logger.exception(e)
-        custom_abort(401, e)
-
     except UnprocessableEntity as e:
         logger.exception(e)
         custom_abort(422, e)
@@ -91,13 +87,13 @@ def get_ranking():
 
         return CustomResponse(message='Generate ranking result', data=ranking_order).custom_jsonify()
 
-    except Unauthorized as e:
-        logger.exception(e)
-        custom_abort(401, e)
-
     except BadRequest as e:
         logger.exception(e)
         custom_abort(400, e)
+
+    except Exception as e:
+        logger.exception(e)
+        custom_abort(500, e)
 
 
 # @bp.route('/get-predictions', methods=['GET'])
@@ -160,14 +156,23 @@ def get_user_predictions():
         decoded_token, find_user = authenticate_user()
         games = Games.query.all()
 
+        if len(games) == 0:
+            raise NotFound('No games found!')
+
         predictions_per_game = []
         for game in games:
-            prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=games.id).all()
+            prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
             predictions_per_game.append({'TeamA': game.team_a, 'TeamB': game.team_b,
-                                         'UserPredictedScore': '' if prediction is None else prediction.predicted_score,
+                                         'UserPredictedScore': '' if prediction is None
+                                         else prediction.predicted_score,
                                          'ActualScore': game.score})
 
         return CustomResponse(message='Predictions per game per user!', data=predictions_per_game).custom_jsonify()
+
+    except NotFound as e:
+        logger.exception(e)
+        custom_abort(404, e)
+
     except Exception as e:
         logger.exception(e)
-        custom_abort(400, e)
+        custom_abort(500, e)

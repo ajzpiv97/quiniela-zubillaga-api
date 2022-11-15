@@ -202,10 +202,9 @@ class UserActionsTestCase(unittest.TestCase):
         res = self.client().get('/user-actions/get-user-predictions',
                                 headers=header_obj)
         data = res.get_json()['data']
-        expected_result = [{'position': 1, 'name': 'Test', 'lastName': 'File1', 'points': 5},
-                           {'position': 2, 'name': 'Sample', 'lastName': 'File2', 'points': 1},
-                           {'position': 3, 'name': 'Test', 'lastName': 'File', 'points': ''},
-                           {'position': 3, 'name': 'Sample', 'lastName': 'File', 'points': ''}]
+        expected_result = [{'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '', 'ActualScore': '1-1'},
+                            {'TeamA': 'team_c', 'TeamB': 'team_d', 'UserPredictedScore': '', 'ActualScore': '2-1'},
+                            {'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '1-1', 'ActualScore': '1-1'}]
         self.assertEqual(200, res.status_code)
         for i in range(len(expected_result)):
             diff = DeepDiff(expected_result[i], data[i])
