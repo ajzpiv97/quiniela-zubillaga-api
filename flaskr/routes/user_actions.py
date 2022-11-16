@@ -1,7 +1,7 @@
 import logging
 from flask import Blueprint
 from flask_pydantic import validate
-from werkzeug.exceptions import Unauthorized, UnprocessableEntity, BadRequest, NotFound
+from werkzeug.exceptions import UnprocessableEntity, BadRequest, NotFound
 from flaskr.db.games import Games
 from flaskr.db.predictions import Predictions
 from flaskr.db.users import Users

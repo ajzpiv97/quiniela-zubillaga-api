@@ -203,8 +203,8 @@ class UserActionsTestCase(unittest.TestCase):
                                 headers=header_obj)
         data = res.get_json()['data']
         expected_result = [{'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '', 'ActualScore': '1-1'},
-                            {'TeamA': 'team_c', 'TeamB': 'team_d', 'UserPredictedScore': '', 'ActualScore': '2-1'},
-                            {'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '1-1', 'ActualScore': '1-1'}]
+                           {'TeamA': 'team_c', 'TeamB': 'team_d', 'UserPredictedScore': '', 'ActualScore': '2-1'},
+                           {'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '1-1', 'ActualScore': '1-1'}]
         self.assertEqual(200, res.status_code)
         for i in range(len(expected_result)):
             diff = DeepDiff(expected_result[i], data[i])

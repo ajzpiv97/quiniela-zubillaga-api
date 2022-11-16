@@ -19,3 +19,12 @@ Auth Done
 
 
 waitress-serve --listen=*:8000 main:app
+
+
+Prediction rules:
+group stage
+1. si adivinas marcador 5 puntos
+2. si advinas ganador o empate 3 puntos
+3. suma de goles 2
+
+read excel team a team b or team b vs team a -> update score agarro predictions associated -> llamo get_score para calcular puntos -> update score en users
