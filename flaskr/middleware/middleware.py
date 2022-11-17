@@ -13,6 +13,9 @@ class ContentTypeMiddleware(object):
         request = Request(environ)
         headers = request.headers
 
+        if request.method == 'OPTIONS':
+            return self.app(environ, start_response)
+
         if 'Accept' in headers:
             if 'application/json' in headers['Accept']:
                 return self.app(environ, start_response)
