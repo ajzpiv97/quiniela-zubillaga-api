@@ -7,6 +7,7 @@ from flaskr.middleware.middleware import ContentTypeMiddleware
 from flaskr.utils.error_handler import error_handler
 from flaskr.utils.extensions import bcrypt, db, migrate
 from flaskr.utils.env_variables import SETTING
+from flaskr.utils.commands import migrate as migration, populate, init_games
 
 
 def create_app():
@@ -19,6 +20,7 @@ def create_app():
     register_error_handlers(app)
     configure_logger(app)
     register_middleware(app)
+    register_commands(app)
     return app
 
 
@@ -58,7 +60,7 @@ def configure_logger(app):
 
 def register_middleware(app):
     app.wsgi_app = ContentTypeMiddleware(app.wsgi_app)
-    CORS(app, resources=r'/*')
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # CORS Headers
     @app.after_request
@@ -81,3 +83,10 @@ def register_middleware(app):
         )
 
         return response
+
+
+def register_commands(app):
+    """Register Click commands."""
+    app.cli.add_command(migration, app)
+    app.cli.add_command(populate)
+    app.cli.add_command(init_games)

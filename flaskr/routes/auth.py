@@ -12,7 +12,7 @@ from flaskr.utils.error_handler import custom_abort
 from flaskr.utils.jwt_generation import generate_jwt
 from flaskr.utils.extensions import bcrypt
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 logger = logging.getLogger(__name__)
 

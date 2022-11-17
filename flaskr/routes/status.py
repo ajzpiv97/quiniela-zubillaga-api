@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flaskr.utils.custom_response import CustomResponse
 
-bp = Blueprint('status', __name__, url_prefix='/')
+bp = Blueprint('status', __name__, url_prefix='/api/')
 
 
 @bp.route('/', methods=['GET'])

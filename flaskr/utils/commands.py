@@ -1,17 +1,33 @@
-import pandas
+import click
 import logging
+import pandas as pd
+from flask.cli import with_appcontext
 from flaskr.db.games import Games
-from flaskr.app import create_app
+from flaskr.utils.extensions import db
+from flaskr.utils.local_utils import update_user_points_based_on_predictions
 
 logger = logging.getLogger(__name__)
 
-app = create_app()
+
+@click.command(name='db')
+@with_appcontext
+def migrate(app):
+    migrate.init_app(app, db)
 
 
-def load_games(file):
-    data = pandas.read_csv(file)
+@click.command(name="update_games")
+@click.option('--games-update-file')
+@with_appcontext
+def populate(games_update_file):
+    update_user_points_based_on_predictions(games_update_file)
+
+
+@click.command(name="init_games")
+@click.option('--file')
+@with_appcontext
+def init_games(file):
+    data = pd.read_csv(file)
     print(data.shape[0])
-
     for i in range(data.shape[0]):
         try:
             new_game = Games(team_a=data.iloc[i]['equipo1'],
@@ -23,7 +39,3 @@ def load_games(file):
         except Exception as e:
             print(e)
             print("error logging games")
-
-
-with app.app_context():
-    load_games("data/partidos.csv")
