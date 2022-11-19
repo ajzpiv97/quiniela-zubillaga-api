@@ -34,7 +34,7 @@ class AuthTestCase(unittest.TestCase):
         data = {"email": "test@hotmail.com",
                 "name": "Test1",
                 "lastName": "test", "password": "1234"}
-        res = self.client().post('/auth/register',
+        res = self.client().post('/api/auth/register',
                                  json=data, headers=header_obj)
         data = json.loads(res.data)
         self.assertEqual(201, res.status_code)
@@ -47,7 +47,7 @@ class AuthTestCase(unittest.TestCase):
         data = {"email": "test@gmail.com",
                 "name": "Test1",
                 "lastName": "test", "password": "1234"}
-        res = self.client().post('/auth/register',
+        res = self.client().post('/api/auth/register',
                                  json=data, headers=header_obj)
         self.assertEqual(400, res.status_code)
 
@@ -57,7 +57,7 @@ class AuthTestCase(unittest.TestCase):
         }
         data = {"email": "test@gmail.com",
                 "password": "1234"}
-        res = self.client().post('/auth/login',
+        res = self.client().post('/api/auth/login',
                                  json=data, headers=header_obj)
         self.assertEqual(200, res.status_code, )
 
@@ -67,7 +67,7 @@ class AuthTestCase(unittest.TestCase):
         }
         data = {"email": "test123@gmail.com",
                 "password": "1234"}
-        res = self.client().post('/auth/login',
+        res = self.client().post('/api/auth/login',
                                  json=data, headers=header_obj)
         self.assertEqual(400, res.status_code,)
 
@@ -77,7 +77,7 @@ class AuthTestCase(unittest.TestCase):
         }
         data = {"email": "test@gmail.com",
                 "password": "123"}
-        res = self.client().post('/auth/login',
+        res = self.client().post('/api/auth/login',
                                  json=data, headers=header_obj)
         self.assertEqual(401, res.status_code)
 

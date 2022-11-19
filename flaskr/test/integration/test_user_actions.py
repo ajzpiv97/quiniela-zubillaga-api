@@ -23,21 +23,22 @@ class UserActionsTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         cls.client = cls.app.test_client
 
-        with cls.app.app_context():
-            db.drop_all()
+    def setUp(self) -> None:
+
+        with self.app.app_context():
             db.create_all()
             password_hash = bcrypt.generate_password_hash('1234')
-            cls.user_data = {"id": 'fe9826cb-ee8e-4274-8b78-a98872a9b2aa', "email": 'test@gmail.com',
-                             "name": 'Test', "last_name": 'File',
-                             "password": password_hash,
-                             }
-            new_user = Users(**cls.user_data)
+            self.user_data = {"id": 'fe9826cb-ee8e-4274-8b78-a98872a9b2aa', "email": 'test@gmail.com',
+                              "name": 'Test', "last_name": 'File',
+                              "password": password_hash,
+                              }
+            new_user = Users(**self.user_data)
             new_user.create()
 
-            cls.user_data1 = {"email": 'test2@gmail.com',
-                              "name": 'Sample', "last_name": 'File',
-                              "password": password_hash}
-            new_user = Users(**cls.user_data1)
+            self.user_data1 = {"email": 'test2@gmail.com',
+                               "name": 'Sample', "last_name": 'File',
+                               "password": password_hash}
+            new_user = Users(**self.user_data1)
             new_user.create()
 
             game1 = Games(team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow())
@@ -53,9 +54,9 @@ class UserActionsTestCase(unittest.TestCase):
             "Auth-token": jwt
         }
         data = {'predictions': [{'team1': 'team_a', 'team2': 'team_b', 'score1': 1, 'score2': 2},
-                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
+                                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
 
-        res = self.client().post('/user-actions/update-predictions',
+        res = self.client().post('/api/user-actions/update-predictions',
                                  json=data, headers=header_obj)
 
         self.assertEqual(201, res.status_code)
@@ -67,15 +68,15 @@ class UserActionsTestCase(unittest.TestCase):
             "Auth-token": jwt
         }
         data = {'predictions': [{'team1': 'team_a', 'team2': 'team_b', 'score1': 1, 'score2': 2},
-                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
+                                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
 
-        self.client().post('/user-actions/update-predictions',
+        self.client().post('/api/user-actions/update-predictions',
                            json=data, headers=header_obj)
 
         data = {'predictions': [{'team1': 'team_a', 'team2': 'team_b', 'score1': 3, 'score2': 1},
-                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 1}]}
+                                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 1}]}
 
-        res = self.client().post('/user-actions/update-predictions',
+        res = self.client().post('/api/user-actions/update-predictions',
                                  json=data, headers=header_obj)
 
         self.assertEqual(201, res.status_code)
@@ -88,9 +89,9 @@ class UserActionsTestCase(unittest.TestCase):
             "Auth-token": jwt
         }
         data = {'predictions': [{'team1': 'team_a', 'team2': 'team_b', 'score1': 1, 'score2': 2},
-                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
+                                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
 
-        res = self.client().post('/user-actions/update-predictions',
+        res = self.client().post('/api/user-actions/update-predictions',
                                  json=data, headers=header_obj)
 
         self.assertEqual(401, res.status_code)
@@ -102,22 +103,32 @@ class UserActionsTestCase(unittest.TestCase):
             "Auth-token": jwt
         }
         data = {'predictions': [{'team1': 'team_a', 'team2': 'team_b', 'score1': 1, 'score2': 2},
-                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
+                                {'team1': 'team_c', 'team2': 'team_d', 'score1': 1, 'score2': 0}]}
 
-        res = self.client().post('/user-actions/update-predictions',
+        res = self.client().post('/api/user-actions/update-predictions',
                                  json=data, headers=header_obj)
 
         self.assertEqual(401, res.status_code)
 
     def test5_update_prediction_but_game_does_not_exist(self):
-        jwt = generate_jwt({'email': 'fault_email@yahoo.com'})
+        with self.app.app_context():
+            game_id = uuid.uuid4()
+            game1 = Games(id=game_id, team_a='team_z', team_b='team_y', score='1-1', date=datetime.utcnow())
+            game1.create()
+
+            prediction = Predictions(game_id=game_id,
+                                     user_email=self.user_data['email'],
+                                     predicted_score='2-1')
+            prediction.create()
+
+        jwt = generate_jwt({'email': self.user_data['email']})
         header_obj = {
             "Content-Type": 'application/json',
             "Auth-token": jwt
         }
         data = {'predictions': [{'team1': 'wrong_teama', 'team2': 'wrong_teamb', 'score1': 1, 'score2': 2}]}
 
-        res = self.client().post('/user-actions/update-predictions',
+        res = self.client().post('/api/user-actions/update-predictions',
                                  json=data, headers=header_obj)
 
         self.assertEqual(422, res.status_code)
@@ -128,7 +139,7 @@ class UserActionsTestCase(unittest.TestCase):
             "Content-Type": 'application/json',
             "Auth-token": jwt
         }
-        res = self.client().get('/user-actions/get-ranking',
+        res = self.client().get('/api/user-actions/get-ranking',
                                 headers=header_obj)
         data = res.get_json()['data']
         expected_result = [{'position': 1, 'name': 'Test', 'lastName': 'File', 'points': ''},
@@ -164,7 +175,7 @@ class UserActionsTestCase(unittest.TestCase):
             "Content-Type": 'application/json',
             "Auth-token": jwt
         }
-        res = self.client().get('/user-actions/get-ranking',
+        res = self.client().get('/api/user-actions/get-ranking',
                                 headers=header_obj)
         data = res.get_json()['data']
         expected_result = [{'position': 1, 'name': 'Test', 'lastName': 'File1', 'points': 5},
@@ -199,7 +210,7 @@ class UserActionsTestCase(unittest.TestCase):
             "Content-Type": 'application/json',
             "Auth-token": jwt
         }
-        res = self.client().get('/user-actions/get-user-predictions',
+        res = self.client().get('/api/user-actions/get-user-predictions',
                                 headers=header_obj)
         data = res.get_json()['data']
         expected_result = [{'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '', 'ActualScore': '1-1'},
@@ -209,6 +220,10 @@ class UserActionsTestCase(unittest.TestCase):
         for i in range(len(expected_result)):
             diff = DeepDiff(expected_result[i], data[i])
             self.assertEqual(0, len(diff), 'something is wrong')
+
+    def tearDown(self) -> None:
+        with self.app.app_context():
+            db.drop_all()
 
     @classmethod
     def tearDownClass(cls) -> None:

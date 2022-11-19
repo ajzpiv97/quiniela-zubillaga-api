@@ -27,18 +27,14 @@ def decode_jwt(token: str):
 
 
 def authenticate_user(return_values: bool = True):
-    try:
-        token = request.headers['Auth-token']
-        decoded_token = decode_jwt(token)
-        if decoded_token['expiration_date'] < str(datetime.utcnow()):
-            raise Unauthorized("Token not valid")
-        find_user = Users.query.filter_by(email=decoded_token['email']).first()
-        if find_user is None:
-            raise Unauthorized('Usuario no esta registrado!')
-        if return_values:
-            return decoded_token, find_user
-    except Unauthorized as e:
-        logger.exception(e)
-        custom_abort(401, e)
+    token = request.headers['Auth-token']
+    decoded_token = decode_jwt(token)
+    if decoded_token['expiration_date'] < str(datetime.utcnow()):
+        raise Unauthorized("Token not valid")
+    find_user = Users.query.filter_by(email=decoded_token['email']).first()
+    if find_user is None:
+        raise Unauthorized('Usuario no esta registrado!')
+    if return_values:
+        return decoded_token, find_user
 
 

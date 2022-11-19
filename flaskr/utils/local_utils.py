@@ -4,7 +4,6 @@ import re
 from typing import NoReturn
 
 from flaskr.db.games import Games
-from flaskr.db.predictions import Predictions
 from flaskr.db.users import Users
 
 logger = logging.getLogger(__name__)
@@ -66,11 +65,10 @@ def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFra
             logger.warning('Game was already updated!')
         else:
             game.update(score=score)
-            predictions = Predictions.query.filter_by(game_id=game.id).all()
-
+            predictions = game.predictions
             for prediction in predictions:
                 prediction.update(actual_score=score)
-                points = get_score(prediction.score, prediction.predicted_score)
+                points = get_score(score, prediction.predicted_score)
                 user = Users.query.filter_by(email=prediction.user_email).one()
                 current_points = 0 if user.total_points == -1 else user.total_points
                 points += current_points
