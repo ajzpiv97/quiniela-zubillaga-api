@@ -28,3 +28,7 @@ group stage
 3. suma de goles 2
 
 read excel team a team b or team b vs team a -> update score agarro predictions associated -> llamo get_score para calcular puntos -> update score en users
+
+
+* Command to upload games:
+  *  flask --app manage.py init_games --file data/partidos.csv
