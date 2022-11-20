@@ -8,12 +8,12 @@ from werkzeug.exceptions import Unauthorized
 
 from flaskr.db.users import Users
 from flaskr.utils.env_variables import SECRET_KEY
-from flaskr.utils.error_handler import custom_abort
 
 logger = logging.getLogger(__name__)
 
 
 def generate_jwt(payload: Dict, expiration_time: float = 100.0) -> str:
+    print(datetime.utcnow())
     expiration_date = datetime.utcnow() + timedelta(minutes=expiration_time)
     token = jwt.encode(
         {**payload, 'expiration_date': expiration_date.timestamp()*1000},
