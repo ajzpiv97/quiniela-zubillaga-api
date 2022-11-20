@@ -11,8 +11,6 @@ class ScoringRulesTesCase(unittest.TestCase):
         self.assertEqual(5, get_score("3-1", "3-1"), "something is wrong")
         self.assertEqual(5, get_score("0-0", "0-0"), "something is wrong")
 
-
-
     def test_match_winner(self):
         # team a wins by different score
         self.assertEqual(3, get_score("3-1", "6-1"), "something is wrong")
@@ -28,4 +26,3 @@ class ScoringRulesTesCase(unittest.TestCase):
         # no goals scored
         self.assertEqual(0, get_score("7-1", "1-1"), "something is wrong")
         self.assertEqual(0, get_score("0-1", "2-0"), "something is wrong")
-
