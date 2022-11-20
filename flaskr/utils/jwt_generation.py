@@ -13,9 +13,10 @@ from flaskr.utils.error_handler import custom_abort
 logger = logging.getLogger(__name__)
 
 
-def generate_jwt(payload: Dict, expiration_time: float = 60.0) -> str:
+def generate_jwt(payload: Dict, expiration_time: float = 30.0) -> str:
+    expiration_date = datetime.utcnow() + timedelta(minutes=expiration_time)
     token = jwt.encode(
-        {**payload, 'expiration_date': str(datetime.utcnow() + timedelta(minutes=expiration_time))},
+        {**payload, 'expiration_date': expiration_date.timestamp()*1000},
         SECRET_KEY, "HS256")
 
     return token
@@ -29,7 +30,7 @@ def decode_jwt(token: str):
 def authenticate_user(return_values: bool = True):
     token = request.headers['Auth-token']
     decoded_token = decode_jwt(token)
-    if decoded_token['expiration_date'] < str(datetime.utcnow()):
+    if decoded_token['expiration_date']/1000 < datetime.utcnow().timestamp():
         raise Unauthorized("Token not valid")
     find_user = Users.query.filter_by(email=decoded_token['email']).first()
     if find_user is None:

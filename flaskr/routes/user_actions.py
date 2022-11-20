@@ -86,6 +86,10 @@ def get_ranking():
         logger.exception(e)
         custom_abort(400, e)
 
+    except Unauthorized as e:
+        logger.exception(e)
+        custom_abort(401, e)
+
     except Exception as e:
         logger.exception(e)
         custom_abort(500, e)
@@ -121,6 +125,10 @@ def get_user_predictions():
     except NotFound as e:
         logger.exception(e)
         custom_abort(404, e)
+
+    except Unauthorized as e:
+        logger.exception(e)
+        custom_abort(401, e)
 
     except Exception as e:
         logger.exception(e)
