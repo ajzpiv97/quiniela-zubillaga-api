@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def generate_jwt(payload: Dict, expiration_time: float = 100.0) -> str:
-    print(datetime.utcnow())
+    print(datetime.utcnow(), datetime.utcnow() + timedelta(minutes=5))
     expiration_date = datetime.utcnow() + timedelta(minutes=expiration_time)
     token = jwt.encode(
         {**payload, 'expiration_date': expiration_date.timestamp()*1000},
