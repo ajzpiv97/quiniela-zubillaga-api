@@ -103,7 +103,7 @@ def get_user_predictions():
         predictions_per_game = []
         for game in games:
             prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
-            predictions_per_game.append({'TeamA': game.team_a, 'TeamB': game.team_b,
+            predictions_per_game.append({'TeamA': game.team_a, 'TeamB': game.team_b,'Group': game.group,
                                          'UserPredictedScore': '' if prediction is None
                                          else prediction.predicted_score,
                                          'ActualScore': game.score})
