@@ -16,7 +16,8 @@ def load_games(file):
         try:
             new_game = Games(team_a=data.iloc[i]['equipo1'],
                              team_b=data.iloc[i]['equipo2'],
-                             date=data.iloc[i]['fecha'])
+                             date=data.iloc[i]['fecha'],
+                             group=data.iloc[i]['grupo'])
             new_game.save()
             logger.info('Game successfully created!' + data.iloc[i]['equipo1'] + " VS " + data.iloc[i]['equipo2'])
             print('Game successfully created!' + data.iloc[i]['equipo1'] + " VS " + data.iloc[i]['equipo2'])

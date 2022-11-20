@@ -15,6 +15,7 @@ class Games(Model):
     team_b = Column(String, nullable=False)
     score = Column(String, default=None)
     date = Column(DateTime, nullable=False, index=True)
+    group = Column(String, nullable=False)
     predictions = relationship("Predictions")
 
     def __init__(self, **kwargs):
