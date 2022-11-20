@@ -53,12 +53,12 @@ def update_user_points_based_on_predictions(games_update_file: str):
 def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFrame):
     for index, row in df.iterrows():
         # get game
-        team_a: str = row['team_a'].upper()
-        team_b: str = row['team_b'].upper()
+        team_a: str = row['team_a'].strip().upper()
+        team_b: str = row['team_b'].strip().upper()
         score = row['score']
-        game = Games.query.filter_by(team_a=team_a, team_b=team_b).one()
+        game = Games.query.filter_by(team_a=team_a, team_b=team_b).first()
         if game is None:
-            game = Games.query.filter_by(team_a=team_b, team_b=team_a).one()
+            game = Games.query.filter_by(team_a=team_b, team_b=team_a).first()
             if game is None:
                 raise Exception(f'Game -> {team_a} vs {team_b} not found')
         if game.score == score:
@@ -69,7 +69,7 @@ def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFra
             for prediction in predictions:
                 prediction.update(actual_score=score)
                 points = get_score(score, prediction.predicted_score)
-                user = Users.query.filter_by(email=prediction.user_email).one()
+                user = Users.query.filter_by(email=prediction.user_email).first()
                 current_points = 0 if user.total_points == -1 else user.total_points
                 points += current_points
                 user.update(total_points=points)

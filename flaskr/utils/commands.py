@@ -30,8 +30,8 @@ def init_games(file):
     print(data.shape[0])
     for i in range(data.shape[0]):
         try:
-            new_game = Games(team_a=data.iloc[i]['equipo1'],
-                             team_b=data.iloc[i]['equipo2'],
+            new_game = Games(team_a=data.iloc[i]['equipo1'].strip().upper(),
+                             team_b=data.iloc[i]['equipo2'].strip().upper(),
                              date=data.iloc[i]['fecha'],
                              group=data.iloc[i]['grupo'])
             new_game.save()
