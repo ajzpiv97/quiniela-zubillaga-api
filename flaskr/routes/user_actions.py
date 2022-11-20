@@ -33,8 +33,8 @@ def update_predictions(body: PredictionBody):
                 if find_game is None:
                     raise UnprocessableEntity("no game found between " + game.team1 + " vs " + game.team2)
             if find_pred is None:
-
                 # create new
+                
                 new_pred = Predictions(game_id=find_game.id, user_email=find_user.email,
                                        predicted_score=f'{game.score1}-{game.score2}')
                 new_pred.create()
