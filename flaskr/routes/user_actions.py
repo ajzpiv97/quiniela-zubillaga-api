@@ -23,7 +23,6 @@ def update_predictions(body: PredictionBody):
 
         # find if user has made any predictions yet
         find_pred = Predictions.query.filter_by(user_email=decoded_token['email']).first()
-
         # set new values
         # loop , get game id with teams, get user id and update prediction
         for game in body.predictions:

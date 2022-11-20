@@ -13,7 +13,7 @@ from flaskr.utils.error_handler import custom_abort
 logger = logging.getLogger(__name__)
 
 
-def generate_jwt(payload: Dict, expiration_time: float = 30.0) -> str:
+def generate_jwt(payload: Dict, expiration_time: float = 100.0) -> str:
     expiration_date = datetime.utcnow() + timedelta(minutes=expiration_time)
     token = jwt.encode(
         {**payload, 'expiration_date': expiration_date.timestamp()*1000},

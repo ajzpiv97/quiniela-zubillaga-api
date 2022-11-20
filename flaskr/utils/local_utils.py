@@ -53,8 +53,8 @@ def update_user_points_based_on_predictions(games_update_file: str):
 def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFrame):
     for index, row in df.iterrows():
         # get game
-        team_a = row['team_a']
-        team_b = row['team_b']
+        team_a: str = row['team_a'].upper()
+        team_b: str = row['team_b'].upper()
         score = row['score']
         game = Games.query.filter_by(team_a=team_a, team_b=team_b).one()
         if game is None:

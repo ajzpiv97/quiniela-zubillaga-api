@@ -1,4 +1,5 @@
 import re
+from typing import Union
 
 from pydantic import BaseModel, Field, validator
 
@@ -31,8 +32,8 @@ class LoginBody(BaseModel):
 class Game(BaseModel):
     team1: str
     team2: str
-    score1: int
-    score2: int
+    score1: Union[int, str]
+    score2: Union[int, str]
 
 
 class PredictionBody(BaseModel):
