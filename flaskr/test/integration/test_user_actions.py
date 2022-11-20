@@ -41,8 +41,8 @@ class UserActionsTestCase(unittest.TestCase):
             new_user = Users(**self.user_data1)
             new_user.create()
 
-            game1 = Games(team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow())
-            game2 = Games(team_a='team_c', team_b='team_d', score='2-1', date=datetime.utcnow())
+            game1 = Games(team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(),group="A")
+            game2 = Games(team_a='team_c', team_b='team_d', score='2-1', date=datetime.utcnow(),group="B")
 
             game1.create()
             game2.create()
@@ -191,6 +191,8 @@ class UserActionsTestCase(unittest.TestCase):
         with self.app.app_context():
             password_hash = bcrypt.generate_password_hash('1234')
             id1 = uuid.uuid4()
+            id2 = uuid.uuid4()
+            id3 = uuid.uuid4()
             new_user_data = {"email": 'test90@gmail.com',
                              "name": 'Test', "last_name": 'File1',
                              "password": password_hash,
@@ -198,9 +200,12 @@ class UserActionsTestCase(unittest.TestCase):
                              }
             new_user = Users(**new_user_data)
             new_user.create()
-            game1 = Games(id=id1, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow())
+            game1 = Games(id=id1, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(),group='A')
+            game2 = Games(id=id2, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(),group='A')
+            game3 = Games(id=id3, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(),group='B')
             game1.create()
-
+            game2.create()
+            game3.create()
             new_prediction = Predictions(game_id=id1, user_email=new_user_data["email"],
                                          predicted_score='1-1')
             new_prediction.create()
@@ -213,9 +218,7 @@ class UserActionsTestCase(unittest.TestCase):
         res = self.client().get('/api/user-actions/get-user-predictions',
                                 headers=header_obj)
         data = res.get_json()['data']
-        expected_result = [{'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '', 'ActualScore': '1-1'},
-                           {'TeamA': 'team_c', 'TeamB': 'team_d', 'UserPredictedScore': '', 'ActualScore': '2-1'},
-                           {'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '1-1', 'ActualScore': '1-1'}]
+        expected_result = {'A': [{'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': ''}, {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': '1-1'}, {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': ''}], 'B': [{'ActualScore': '2-1', 'TeamA': 'team_c', 'TeamB': 'team_d', 'UserPredictedScore': ''}, {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b', 'UserPredictedScore': ''}]}
         self.assertEqual(200, res.status_code)
         for i in range(len(expected_result)):
             diff = DeepDiff(expected_result[i], data[i])

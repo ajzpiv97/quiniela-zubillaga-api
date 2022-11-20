@@ -100,15 +100,24 @@ def get_user_predictions():
         if len(games) == 0:
             raise NotFound('No games found!')
 
+        ret_dict = {
+        }
+
         predictions_per_game = []
         for game in games:
             prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
-            predictions_per_game.append({'TeamA': game.team_a, 'TeamB': game.team_b,'Group': game.group,
+            if game.group in ret_dict:
+                ret_dict[game.group].append({'TeamA': game.team_a, 'TeamB': game.team_b,
                                          'UserPredictedScore': '' if prediction is None
                                          else prediction.predicted_score,
                                          'ActualScore': game.score})
+            else:
+                ret_dict[game.group] = [{'TeamA': game.team_a, 'TeamB': game.team_b,
+                                             'UserPredictedScore': '' if prediction is None
+                                             else prediction.predicted_score,
+                                             'ActualScore': game.score}]
 
-        return CustomResponse(message='Predictions per game per user!', data=predictions_per_game).custom_jsonify()
+        return CustomResponse(message='Predictions per game per user!', data=ret_dict).custom_jsonify()
 
     except NotFound as e:
         logger.exception(e)
