@@ -12,7 +12,7 @@ from flaskr.utils.env_variables import SECRET_KEY
 logger = logging.getLogger(__name__)
 
 
-def generate_jwt(payload: Dict, expiration_time: float = 100.0) -> str:
+def generate_jwt(payload: Dict, expiration_time: float = 15.0) -> str:
     expiration_date = datetime.utcnow() + timedelta(minutes=expiration_time)
     token = jwt.encode(
         {**payload, 'expiration_date': expiration_date.timestamp()},

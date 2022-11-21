@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @validate(body=PredictionBody)
 def update_predictions(body: PredictionBody):
     try:
+        custom_abort(401, 'No se pueden submit predicciones en este momento!')
         decoded_token, find_user = authenticate_user()
 
         # find if user has made any predictions yet
