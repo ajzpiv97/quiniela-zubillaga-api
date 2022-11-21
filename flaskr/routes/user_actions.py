@@ -34,7 +34,7 @@ def update_predictions(body: PredictionBody):
                     raise UnprocessableEntity("no game found between " + game.team1 + " vs " + game.team2)
             if find_pred is None:
                 # create new
-                
+
                 new_pred = Predictions(game_id=find_game.id, user_email=find_user.email,
                                        predicted_score=f'{game.score1}-{game.score2}')
                 new_pred.create()
@@ -108,16 +108,16 @@ def get_user_predictions():
 
         for game in games:
             prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
-            if game.group in ret_dict:
-                ret_dict[game.group].append({'TeamA': game.team_a, 'TeamB': game.team_b,
-                                             'UserPredictedScore': '' if prediction is None
-                                             else prediction.predicted_score,
-                                             'ActualScore': game.score})
+            if game.match_group in ret_dict:
+                ret_dict[game.match_group].append({'TeamA': game.team_a, 'TeamB': game.team_b,
+                                                   'UserPredictedScore': '' if prediction is None
+                                                   else prediction.predicted_score,
+                                                   'ActualScore': game.score})
             else:
-                ret_dict[game.group] = [{'TeamA': game.team_a, 'TeamB': game.team_b,
-                                         'UserPredictedScore': '' if prediction is None
-                                         else prediction.predicted_score,
-                                         'ActualScore': game.score}]
+                ret_dict[game.match_group] = [{'TeamA': game.team_a, 'TeamB': game.team_b,
+                                               'UserPredictedScore': '' if prediction is None
+                                               else prediction.predicted_score,
+                                               'ActualScore': game.score}]
 
         return CustomResponse(message='Predictions per game per user!', data=ret_dict).custom_jsonify()
 

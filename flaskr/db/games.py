@@ -14,8 +14,8 @@ class Games(Model):
     team_a = Column(String, nullable=False)
     team_b = Column(String, nullable=False)
     score = Column(String, default=None)
-    date = Column(DateTime, nullable=False, index=True)
-    group = Column('match_group', String, nullable=False)
+    match_date = Column('match_date', DateTime, nullable=False)
+    match_group = Column('match_group', String, nullable=False)
     predictions = relationship("Predictions")
 
     def __init__(self, **kwargs):
@@ -25,5 +25,3 @@ class Games(Model):
     def __repr__(self):
         """Represent instance as a unique string."""
         return f"<Games({self.team_a}; {self.team_b})>"
-
-

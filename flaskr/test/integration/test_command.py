@@ -24,10 +24,10 @@ class CommandTestCase(unittest.TestCase):
             db.create_all()
             password_hash = bcrypt.generate_password_hash('1234')
 
-            game1 = Games(id=self.game_id1, team_a='team_a',
-                          team_b='team_b', score='', date=datetime.utcnow())
-            game2 = Games(id=self.game_id2, team_a='team_c',
-                          team_b='team_d', score='', date=datetime.utcnow())
+            game1 = Games(id=self.game_id1, team_a='TEAM_A',
+                          team_b='TEAM_B', score='', match_date=datetime.utcnow(), match_group='A')
+            game2 = Games(id=self.game_id2, team_a='TEAM_C',
+                          team_b='TEAM_D', score='', match_date=datetime.utcnow(), match_group='B')
 
             game1.create()
             game2.create()
@@ -50,7 +50,7 @@ class CommandTestCase(unittest.TestCase):
                 prediction.create()
 
     def test1_update_points_for_users(self):
-        df = pd.DataFrame({'team_a': ['team_a', 'team_c'], 'team_b': ['team_b', 'team_d'], 'score': ['0-6', '2-1']})
+        df = pd.DataFrame({'team_a': ['TEAM_A', 'TEAM_C'], 'team_b': ['TEAM_B', 'TEAM_D'], 'score': ['0-6', '2-1']})
         with self.app.app_context():
             iterate_through_df_and_update_user_points_based_on_game_score(df)
             self.assertEqual(3, Users.query.filter_by(email='test0@gmail.com').first().total_points,
@@ -61,7 +61,7 @@ class CommandTestCase(unittest.TestCase):
                              'something is wrong')
 
     def test2_update_points_already_updated(self):
-        df = pd.DataFrame({'team_a': ['team_a', 'team_c'], 'team_b': ['team_b', 'team_d'], 'score': ['0-6', '2-1']})
+        df = pd.DataFrame({'team_a': ['TEAM_A', 'TEAM_C'], 'team_b': ['TEAM_B', 'TEAM_D'], 'score': ['0-6', '2-1']})
         with self.app.app_context():
             game = Games.query.filter_by(id=self.game_id2).first()
             game.update(score='2-1')

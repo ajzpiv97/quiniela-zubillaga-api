@@ -26,9 +26,10 @@ class UserActionsTestCase(unittest.TestCase):
     def setUp(self) -> None:
 
         with self.app.app_context():
+            db.drop_all()
             db.create_all()
             password_hash = bcrypt.generate_password_hash('1234')
-            self.user_data = {"id": 'fe9826cb-ee8e-4274-8b78-a98872a9b2aa', "email": 'test@gmail.com',
+            self.user_data = {"email": 'test@gmail.com',
                               "name": 'Test', "last_name": 'File',
                               "password": password_hash,
                               }
@@ -41,8 +42,8 @@ class UserActionsTestCase(unittest.TestCase):
             new_user = Users(**self.user_data1)
             new_user.create()
 
-            game1 = Games(team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(), group="A")
-            game2 = Games(team_a='team_c', team_b='team_d', score='2-1', date=datetime.utcnow(), group="B")
+            game1 = Games(team_a='team_a', team_b='team_b', score='1-1', match_date=datetime.utcnow(), match_group="A")
+            game2 = Games(team_a='team_c', team_b='team_d', score='2-1', match_date=datetime.utcnow(), match_group="B")
 
             game1.create()
             game2.create()
@@ -113,7 +114,8 @@ class UserActionsTestCase(unittest.TestCase):
     def test5_update_prediction_but_game_does_not_exist(self):
         with self.app.app_context():
             game_id = uuid.uuid4()
-            game1 = Games(id=game_id, team_a='team_z', team_b='team_y', score='1-1', date=datetime.utcnow())
+            game1 = Games(id=game_id, team_a='team_z', team_b='team_y', score='1-1', match_date=datetime.utcnow(),
+                          match_group='A')
             game1.create()
 
             prediction = Predictions(game_id=game_id,
@@ -200,9 +202,12 @@ class UserActionsTestCase(unittest.TestCase):
                              }
             new_user = Users(**new_user_data)
             new_user.create()
-            game1 = Games(id=id1, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(), group='A')
-            game2 = Games(id=id2, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(), group='A')
-            game3 = Games(id=id3, team_a='team_a', team_b='team_b', score='1-1', date=datetime.utcnow(), group='B')
+            game1 = Games(id=id1, team_a='team_a', team_b='team_b', score='1-1',
+                          match_date=datetime.utcnow(), match_group='A')
+            game2 = Games(id=id2, team_a='team_a', team_b='team_b', score='1-1',
+                          match_date=datetime.utcnow(), match_group='A')
+            game3 = Games(id=id3, team_a='team_a', team_b='team_b', score='1-1',
+                          match_date=datetime.utcnow(), match_group='B')
             game1.create()
             game2.create()
             game3.create()
