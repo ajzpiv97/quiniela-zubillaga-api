@@ -73,3 +73,9 @@ def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFra
                 current_points = 0 if user.total_points == -1 else user.total_points
                 points += current_points
                 user.update(total_points=points)
+
+
+def get_timestamp(date,time):
+    pattern = '%m/%d/%Y %H:%M:%S'
+    z = datetime.strptime(f"{date} {time}", pattern)
+    return z.utcnow().timestamp()

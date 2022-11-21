@@ -5,7 +5,7 @@ from flask.cli import with_appcontext
 from flaskr.db.games import Games
 from flaskr.utils.extensions import db
 from flaskr.utils.local_utils import update_user_points_based_on_predictions
-
+from flaskr.utils.local_utils import get_timestamp
 logger = logging.getLogger(__name__)
 
 
@@ -40,3 +40,24 @@ def init_games(file):
         except Exception as e:
             print(e)
             print("error logging games")
+
+
+@click.command(name="update_game_time")
+@click.option('--file')
+@with_appcontext
+def update_game_time(file):
+    data = pd.read_csv(file)
+    print(data.shape[0])
+    for i in range(data.shape[0]):
+        try:
+            temp_game_obj = Games.query.filter_by(team_a=data.iloc[i]['team_a'], team_b=data.iloc[i]['team_b'],match_group=data.iloc[i]['group']).first()
+            date = data.iloc[i]["date"]
+            time = data.iloc[i]["time"]
+            utc_timestamp = get_timestamp(date,time)
+            temp_game_obj.update(match_date=utc_timestamp)
+            temp_game_obj.save()
+            logger.info('Game successfully updated!' + data.iloc[i]['date'])
+            print('Game successfully updated!' + data.iloc[i]['date'])
+        except Exception as e:
+            print(e)
+            print("error updating game date")
