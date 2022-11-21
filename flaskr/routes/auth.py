@@ -1,5 +1,4 @@
 import logging
-from sqlalchemy import select
 import sqlalchemy.exc
 from flask import Blueprint
 from flask_pydantic import validate
@@ -10,7 +9,7 @@ from flaskr.models.models import RegisterBody, LoginBody
 from flaskr.utils.custom_response import CustomResponse
 from flaskr.utils.error_handler import custom_abort
 from flaskr.utils.jwt_generation import generate_jwt
-from flaskr.utils.extensions import bcrypt, db
+from flaskr.utils.extensions import bcrypt
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
