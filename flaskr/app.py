@@ -7,7 +7,7 @@ from flaskr.middleware.middleware import ContentTypeMiddleware
 from flaskr.utils.error_handler import error_handler
 from flaskr.utils.extensions import bcrypt, db, migrate
 from flaskr.utils.env_variables import SETTING
-from flaskr.utils.commands import migrate as migration, populate, init_games
+from flaskr.utils.commands import migrate as migration, populate, init_games, update_game_time
 
 
 def create_app():
@@ -90,3 +90,4 @@ def register_commands(app):
     app.cli.add_command(migration, app)
     app.cli.add_command(populate)
     app.cli.add_command(init_games)
+    app.cli.add_command(update_game_time)

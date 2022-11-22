@@ -42,8 +42,10 @@ class UserActionsTestCase(unittest.TestCase):
             new_user = Users(**self.user_data1)
             new_user.create()
 
-            game1 = Games(team_a='team_a', team_b='team_b', score='1-1', match_date=datetime.utcnow(), match_group="A")
-            game2 = Games(team_a='team_c', team_b='team_d', score='2-1', match_date=datetime.utcnow(), match_group="B")
+            game1 = Games(team_a='team_a', team_b='team_b', score='1-1', match_date=int(datetime.utcnow().timestamp()),
+                          match_group="A")
+            game2 = Games(team_a='team_c', team_b='team_d', score='2-1', match_date=int(datetime.utcnow().timestamp()),
+                          match_group="B")
 
             game1.create()
             game2.create()
@@ -190,6 +192,7 @@ class UserActionsTestCase(unittest.TestCase):
             self.assertEqual(0, len(diff), 'something is wrong')
 
     def test8_get_user_predictions(self):
+        timestamp = int(datetime.utcnow().timestamp())
         with self.app.app_context():
             password_hash = bcrypt.generate_password_hash('1234')
             id1 = uuid.uuid4()
@@ -203,11 +206,11 @@ class UserActionsTestCase(unittest.TestCase):
             new_user = Users(**new_user_data)
             new_user.create()
             game1 = Games(id=id1, team_a='team_a', team_b='team_b', score='1-1',
-                          match_date=datetime.utcnow(), match_group='A')
+                          match_date=timestamp, match_group='A')
             game2 = Games(id=id2, team_a='team_a', team_b='team_b', score='1-1',
-                          match_date=datetime.utcnow(), match_group='A')
+                          match_date=timestamp, match_group='A')
             game3 = Games(id=id3, team_a='team_a', team_b='team_b', score='1-1',
-                          match_date=datetime.utcnow(), match_group='B')
+                          match_date=timestamp, match_group='B')
             game1.create()
             game2.create()
             game3.create()
@@ -224,15 +227,15 @@ class UserActionsTestCase(unittest.TestCase):
                                 headers=header_obj)
         data = res.get_json()['data']
         expected_result = {'A': [{'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': ''},
+                                  'UserPredictedScore': '', 'DateTimestamp': timestamp},
                                  {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': '1-1'},
+                                  'UserPredictedScore': '1-1', 'DateTimestamp': timestamp},
                                  {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': ''}],
+                                  'UserPredictedScore': '', 'DateTimestamp': timestamp}],
                            'B': [{'ActualScore': '2-1', 'TeamA': 'team_c', 'TeamB': 'team_d',
-                                  'UserPredictedScore': ''},
+                                  'UserPredictedScore': '', 'DateTimestamp': timestamp},
                                  {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': ''}]}
+                                  'UserPredictedScore': '', 'DateTimestamp': timestamp}]}
         self.assertEqual(200, res.status_code)
         diff = DeepDiff(expected_result, data)
         self.assertEqual(0, len(diff), 'something is wrong')

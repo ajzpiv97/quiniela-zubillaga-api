@@ -1,8 +1,10 @@
 import logging
 import pandas as pd
+import pytz
+
 import re
 from typing import NoReturn
-
+from datetime import datetime
 from flaskr.db.games import Games
 from flaskr.db.users import Users
 
@@ -10,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_score(actual_score: str, predicted_score: str) -> int:
+    if predicted_score == '-':
+        return 0
+
     score_a = [int(score) for score in actual_score.strip().split("-")]
     score_p = [int(score) for score in predicted_score.strip().split("-")]
     score = 0
@@ -67,9 +72,16 @@ def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFra
             game.update(score=score)
             predictions = game.predictions
             for prediction in predictions:
-                prediction.update(actual_score=score)
                 points = get_score(score, prediction.predicted_score)
+                prediction.update(actual_score=score, points=points)
                 user = Users.query.filter_by(email=prediction.user_email).first()
                 current_points = 0 if user.total_points == -1 else user.total_points
                 points += current_points
                 user.update(total_points=points)
+
+
+def get_timestamp(date, time):
+    pattern = '%m/%d/%y %H:%M:%S'
+    tz = pytz.timezone('US/Eastern')
+    z = datetime.strptime(f"{date} {time}", pattern).astimezone(tz)
+    return 1669024800

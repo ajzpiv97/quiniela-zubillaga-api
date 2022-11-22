@@ -108,16 +108,16 @@ def get_user_predictions():
 
         for game in games:
             prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
+            prediction_obj = {'TeamA': game.team_a, 'TeamB': game.team_b,
+                              'UserPredictedScore': '' if prediction is None
+                              else prediction.predicted_score,
+                              'ActualScore': game.score,
+                              'DateTimestamp': game.match_date}
+
             if game.match_group in ret_dict:
-                ret_dict[game.match_group].append({'TeamA': game.team_a, 'TeamB': game.team_b,
-                                                   'UserPredictedScore': '' if prediction is None
-                                                   else prediction.predicted_score,
-                                                   'ActualScore': game.score})
+                ret_dict[game.match_group].append(prediction_obj)
             else:
-                ret_dict[game.match_group] = [{'TeamA': game.team_a, 'TeamB': game.team_b,
-                                               'UserPredictedScore': '' if prediction is None
-                                               else prediction.predicted_score,
-                                               'ActualScore': game.score}]
+                ret_dict[game.match_group] = [prediction_obj]
 
         return CustomResponse(message='Predictions per game per user!', data=ret_dict).custom_jsonify()
 
