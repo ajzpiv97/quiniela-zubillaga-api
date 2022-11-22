@@ -50,10 +50,11 @@ def update_game_time(file):
     print(data.shape[0])
     for i in range(data.shape[0]):
         try:
-            temp_game_obj = Games.query.filter_by(team_a=data.iloc[i]['team_a'], team_b=data.iloc[i]['team_b'],match_group=data.iloc[i]['group']).first()
+            temp_game_obj = Games.query.filter_by(team_a=data.iloc[i]['team_a'], team_b=data.iloc[i]['team_b'],
+                                                  match_group=data.iloc[i]['grupo']).first()
             date = data.iloc[i]["date"]
             time = data.iloc[i]["time"]
-            utc_timestamp = get_timestamp(date,time)
+            utc_timestamp = get_timestamp(date, time)
             temp_game_obj.update(match_date=utc_timestamp)
             temp_game_obj.save()
             logger.info('Game successfully updated!' + data.iloc[i]['date'])

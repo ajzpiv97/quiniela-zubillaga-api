@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
 from flaskr.db.base_model import Model
@@ -14,7 +14,7 @@ class Games(Model):
     team_a = Column(String, nullable=False)
     team_b = Column(String, nullable=False)
     score = Column(String, default=None)
-    match_date = Column('match_date', DateTime, nullable=False)
+    match_date = Column('match_date_timestamp', Integer, nullable=False)
     match_group = Column('match_group', String, nullable=False)
     predictions = relationship("Predictions")
 
