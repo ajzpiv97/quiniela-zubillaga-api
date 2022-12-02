@@ -1,9 +1,10 @@
 import logging
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_pydantic import validate
 from werkzeug.exceptions import UnprocessableEntity, BadRequest, NotFound, Unauthorized
 from flaskr.db.games import Games
 from flaskr.db.predictions import Predictions
+from flaskr.db.rounds import Rounds
 from flaskr.db.users import Users
 from flaskr.models.models import PredictionBody
 from flaskr.utils.custom_response import CustomResponse
@@ -98,15 +99,23 @@ def get_ranking():
 def get_user_predictions():
     try:
         decoded_token, find_user = authenticate_user()
-        games = Games.query.all()
+        round_id = request.args.get('round_id')
 
-        if len(games) == 0:
-            raise NotFound('No games found!')
+        if round_id is None:
+            raise BadRequest('No round id was passed!')
+
+        game_round = Rounds.query.filter_by(id=round_id).first()
+
+        if game_round is None:
+            raise NotFound('No round found!')
 
         ret_dict = {
         }
 
-        for game in games:
+        rounds_list = []
+
+        round_info = {'id': game_round.id, 'name': game_round.round_name}
+        for game in game_round.games:
             prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
             prediction_obj = {'TeamA': game.team_a, 'TeamB': game.team_b,
                               'UserPredictedScore': '' if prediction is None
@@ -119,7 +128,9 @@ def get_user_predictions():
             else:
                 ret_dict[game.match_group] = [prediction_obj]
 
-        return CustomResponse(message='Predictions per game per user!', data=ret_dict).custom_jsonify()
+        round_info['games'] = ret_dict
+        rounds_list.append(round_info)
+        return CustomResponse(message='Predictions per game per user!', data=rounds_list).custom_jsonify()
 
     except NotFound as e:
         logger.exception(e)
@@ -128,6 +139,10 @@ def get_user_predictions():
     except Unauthorized as e:
         logger.exception(e)
         custom_abort(401, e)
+
+    except BadRequest as e:
+        logger.exception(e)
+        custom_abort(400, e)
 
     except Exception as e:
         logger.exception(e)
