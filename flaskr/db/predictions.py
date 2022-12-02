@@ -12,6 +12,8 @@ class Predictions(Model):
     actual_score = Column(String, default=None)
     predicted_score = Column(String, nullable=False)
     points = Column(Integer, default=None)
+    prediction_insert_date = Column(String, nullable=True)
+    prediction_modified_date = Column(String, nullable=True)
 
     def __init__(self, **kwargs):
         """Create instance."""
