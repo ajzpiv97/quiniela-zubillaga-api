@@ -80,8 +80,8 @@ def iterate_through_df_and_update_user_points_based_on_game_score(df: pd.DataFra
                 user.update(total_points=points)
 
 
-def get_timestamp(date, time):
+def get_datetime_object_from_pattern(date, time) -> datetime:
     pattern = '%m/%d/%y %H:%M:%S'
-    tz = pytz.timezone('US/Eastern')
-    z = datetime.strptime(f"{date} {time}", pattern).astimezone(tz)
-    return 1669024800
+    tz = pytz.timezone('UTC')
+    datetime_obj = datetime.strptime(f"{date} {time}", pattern).astimezone(tz)
+    return datetime_obj
