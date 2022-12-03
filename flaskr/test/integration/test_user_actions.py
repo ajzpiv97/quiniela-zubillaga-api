@@ -7,6 +7,7 @@ from datetime import datetime
 from flaskr.app import create_app
 from flaskr.db.games import Games
 from flaskr.db.predictions import Predictions
+from flaskr.db.rounds import Rounds
 from flaskr.db.users import Users
 from flaskr.utils.extensions import db, bcrypt
 from flaskr.utils.jwt_generation import generate_jwt
@@ -42,10 +43,24 @@ class UserActionsTestCase(unittest.TestCase):
             new_user = Users(**self.user_data1)
             new_user.create()
 
+            round1 = Rounds(id=1, round_name="round1", round_start_datetime='2022-01-01 00:00:00',
+                            round_start_timestamp=datetime.utcnow().timestamp(),
+                            round_end_datetime='2022-01-02 00:00:00',
+                            round_end_timestamp=datetime.utcnow().timestamp()
+                            )
+            round1.save()
+
+            round2 = Rounds(id=2, round_name="round2", round_start_datetime='2022-01-01 00:00:00',
+                            round_start_timestamp=datetime.utcnow().timestamp(),
+                            round_end_datetime='2022-01-02 00:00:00',
+                            round_end_timestamp=datetime.utcnow().timestamp()
+                            )
+            round2.save()
+
             game1 = Games(team_a='team_a', team_b='team_b', score='1-1', match_date=int(datetime.utcnow().timestamp()),
-                          match_group="A")
+                          match_group="A", round_id=1)
             game2 = Games(team_a='team_c', team_b='team_d', score='2-1', match_date=int(datetime.utcnow().timestamp()),
-                          match_group="B")
+                          match_group="B", round_id=2)
 
             game1.create()
             game2.create()
@@ -206,39 +221,47 @@ class UserActionsTestCase(unittest.TestCase):
             new_user = Users(**new_user_data)
             new_user.create()
             game1 = Games(id=id1, team_a='team_a', team_b='team_b', score='1-1',
-                          match_date=timestamp, match_group='A')
+                          match_date=timestamp, match_group='B', round_id=1)
             game2 = Games(id=id2, team_a='team_a', team_b='team_b', score='1-1',
-                          match_date=timestamp, match_group='A')
+                          match_date=timestamp, match_group='A', round_id=2)
             game3 = Games(id=id3, team_a='team_a', team_b='team_b', score='1-1',
-                          match_date=timestamp, match_group='B')
+                          match_date=timestamp, match_group='B', round_id=2)
             game1.create()
             game2.create()
             game3.create()
             new_prediction = Predictions(game_id=id1, user_email=new_user_data["email"],
                                          predicted_score='1-1')
             new_prediction.create()
+            new_prediction = Predictions(game_id=id3, user_email=new_user_data["email"],
+                                         predicted_score='1-1')
+            new_prediction.create()
+            round2 = Rounds(id=3, round_name="round3", round_start_datetime='2022-01-01 00:00:00',
+                            round_start_timestamp=datetime.utcnow().timestamp(),
+                            round_end_datetime='2022-01-02 00:00:00',
+                            round_end_timestamp=datetime.utcnow().timestamp()
+                            )
+            round2.save()
 
         jwt = generate_jwt({'email': new_user_data['email']}, expiration_time=5)
         header_obj = {
             "Content-Type": 'application/json',
             "Auth-token": jwt
         }
-        res = self.client().get('/api/user-actions/get-user-predictions',
+        res = self.client().get('/api/user-actions/get-user-predictions?round_id=1',
                                 headers=header_obj)
         data = res.get_json()['data']
-        expected_result = {'A': [{'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': '', 'DateTimestamp': timestamp},
-                                 {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': '1-1', 'DateTimestamp': timestamp},
-                                 {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': '', 'DateTimestamp': timestamp}],
-                           'B': [{'ActualScore': '2-1', 'TeamA': 'team_c', 'TeamB': 'team_d',
-                                  'UserPredictedScore': '', 'DateTimestamp': timestamp},
-                                 {'ActualScore': '1-1', 'TeamA': 'team_a', 'TeamB': 'team_b',
-                                  'UserPredictedScore': '', 'DateTimestamp': timestamp}]}
         self.assertEqual(200, res.status_code)
-        diff = DeepDiff(expected_result, data)
-        self.assertEqual(0, len(diff), 'something is wrong')
+
+        expected_result = [{'games': {'A': [{'ActualScore': '1-1', 'DateTimestamp': timestamp, 'TeamA': 'team_a',
+                                             'TeamB': 'team_b', 'UserPredictedScore': ''}],
+                                      'B': [{'ActualScore': '1-1', 'DateTimestamp': timestamp, 'TeamA': 'team_a',
+                                             'TeamB': 'team_b', 'UserPredictedScore': '1-1'}]},
+                            }]
+
+        for i in range(len(data)):
+
+            diff = DeepDiff(expected_result[i], data[i])
+            self.assertEqual(0, len(diff), 'something is wrong')
 
     def tearDown(self) -> None:
         with self.app.app_context():
