@@ -11,6 +11,8 @@ class Rounds(Model):
     round_name = Column(String, nullable=False)
     round_start_datetime = Column(String, nullable=False)
     round_start_timestamp = Column(Integer, nullable=False)
+    prediction_start_timestamp = Column(Integer, nullable=True)
+    prediction_end_timestamp = Column(Integer, nullable=True)
     round_end_datetime = Column(String, nullable=False)
     round_end_timestamp = Column(Integer, nullable=False)
     games = relationship("Games")

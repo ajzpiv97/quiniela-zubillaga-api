@@ -256,7 +256,7 @@ class UserActionsTestCase(unittest.TestCase):
                                              'TeamB': 'team_b', 'UserPredictedScore': ''}],
                                       'B': [{'ActualScore': '1-1', 'DateTimestamp': timestamp, 'TeamA': 'team_a',
                                              'TeamB': 'team_b', 'UserPredictedScore': '1-1'}]},
-                            'id': 1, 'name': 'round1'}]
+                            }]
 
         for i in range(len(data)):
 

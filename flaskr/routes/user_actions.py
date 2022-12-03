@@ -95,11 +95,50 @@ def get_ranking():
         custom_abort(500, e)
 
 
+@bp.route('/get-rounds', methods=['GET'])
+def get_rounds():
+    try:
+        authenticate_user()
+        rounds = Rounds.query.all()
+
+        if len(rounds) == 0:
+            raise BadRequest('No round were found!')
+
+        rounds_list = []
+
+        for game_round in rounds:
+            round_info = {'id': game_round.id, 'name': game_round.round_name,
+                          'startTimestamp': game_round.round_start_timestamp,
+                          'endTimestamp': game_round.round_end_timestamp,
+                          'startPredictionTimestamp': game_round.prediction_start_timestamp,
+                          'endPredictionTimestamp': game_round.prediction_end_timestamp
+                          }
+            rounds_list.append(round_info)
+
+        return CustomResponse(message='Predictions per game per user!', data=rounds_list).custom_jsonify()
+
+    except NotFound as e:
+        logger.exception(e)
+        custom_abort(404, e)
+
+    except Unauthorized as e:
+        logger.exception(e)
+        custom_abort(401, e)
+
+    except BadRequest as e:
+        logger.exception(e)
+        custom_abort(400, e)
+
+    except Exception as e:
+        logger.exception(e)
+        custom_abort(500, e)
+
+
 @bp.route('/get-user-predictions', methods=['GET'])
 def get_user_predictions():
     try:
         decoded_token, find_user = authenticate_user()
-        round_id = request.args.get('round_id')
+        round_id = request.args.get('roundId')
 
         if round_id is None:
             raise BadRequest('No round id was passed!')
@@ -114,7 +153,7 @@ def get_user_predictions():
 
         rounds_list = []
 
-        round_info = {'id': game_round.id, 'name': game_round.round_name}
+        round_info = {}
         for game in game_round.games:
             prediction = Predictions.query.filter_by(user_email=decoded_token['email'], game_id=game.id).first()
             prediction_obj = {'TeamA': game.team_a, 'TeamB': game.team_b,

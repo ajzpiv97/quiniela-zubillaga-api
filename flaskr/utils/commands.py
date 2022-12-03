@@ -38,7 +38,8 @@ def init_games(file):
             new_game = Games(team_a=data.iloc[i]['equipo1'].strip().upper(),
                              team_b=data.iloc[i]['equipo2'].strip().upper(),
                              match_date=utc_timestamp,
-                             match_group=data.iloc[i]['grupo'])
+                             match_group=data.iloc[i]['grupo'],
+                             round_id=int(data.iloc[i]['ronda']))
             new_game.save()
             logger.info('Game successfully created!' + data.iloc[i]['equipo1'] + " VS " + data.iloc[i]['equipo2'])
             print('Game successfully created!' + data.iloc[i]['equipo1'] + " VS " + data.iloc[i]['equipo2'])
@@ -62,11 +63,26 @@ def init_rounds(file):
             start_utc_object = get_datetime_object_from_pattern(start_date, start_time)
             end_utc_object = get_datetime_object_from_pattern(end_date, end_time)
 
+            start_date_pred = data.iloc[i]["start_date_pred"]
+            start_time_pred = data.iloc[i]["start_time_pred"]
+            end_date_pred = data.iloc[i]["end_date_pred"]
+            end_time_pred = data.iloc[i]["end_time_pred"]
+
+            start_pred_utc_object = get_datetime_object_from_pattern(start_date_pred, start_time_pred) \
+                if not pd.isna(start_date_pred) else None
+            end_pred_utc_object = get_datetime_object_from_pattern(end_date_pred, end_time_pred) \
+                if not pd.isna(end_date_pred) else None
+
             new_round = Rounds(round_name=data.iloc[i]['round'].strip().upper(),
                                round_start_datetime=start_utc_object.strftime("%Y-%m-%d %H:%M:%S"),
                                round_start_timestamp=start_utc_object.timestamp(),
                                round_end_datetime=end_utc_object.strftime("%Y-%m-%d %H:%M:%S"),
-                               round_end_timestamp=end_utc_object.timestamp())
+                               round_end_timestamp=end_utc_object.timestamp(),
+                               prediction_start_timestamp=start_pred_utc_object.timestamp() if start_pred_utc_object
+                                                                                            is not None else None,
+                               prediction_end_timestamp=end_pred_utc_object.timestamp() if end_pred_utc_object
+                                                                                            is not None else None,
+                               )
             new_round.save()
             logger.info('Round successfully created!' + data.iloc[i]['round'])
             print('Round successfully created!' + data.iloc[i]['round'])
