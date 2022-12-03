@@ -1,6 +1,7 @@
 import logging
 from flask import Blueprint, request
 from flask_pydantic import validate
+from datetime import datetime
 from werkzeug.exceptions import UnprocessableEntity, BadRequest, NotFound, Unauthorized
 from flaskr.db.games import Games
 from flaskr.db.predictions import Predictions
@@ -26,6 +27,7 @@ def update_predictions(body: PredictionBody):
         find_pred = Predictions.query.filter_by(user_email=decoded_token['email']).first()
         # set new values
         # loop , get game id with teams, get user id and update prediction
+        time = datetime.utcnow()
         for game in body.predictions:
             # get game
             find_game = Games.query.filter_by(team_a=game.team1, team_b=game.team2).first()
@@ -44,8 +46,14 @@ def update_predictions(body: PredictionBody):
                 # update
                 # get object
                 temp_pred_obj = Predictions.query.filter_by(game_id=find_game.id, user_email=find_user.email).first()
-                temp_pred_obj.update(predicted_score=f'{game.score1}-{game.score2}')
-                logger.info("Update prediction made by user " + str(find_user.email))
+                if temp_pred_obj is None:
+                    temp_pred_obj = Predictions(game_id=find_game.id, user_email=find_user.email,
+                                                predicted_score=f'{game.score1}-{game.score2}')
+                    temp_pred_obj.save()
+                    logger.info(f'Created prediction! User: {find_user.email}')
+                else:
+                    temp_pred_obj.update(predicted_score=f'{game.score1}-{game.score2}')
+                    logger.info("Update prediction made by user " + str(find_user.email))
 
     except UnprocessableEntity as e:
         logger.exception(e)
