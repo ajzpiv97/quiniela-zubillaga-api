@@ -23,9 +23,6 @@ def update_predictions(body: PredictionBody):
     try:
         decoded_token, find_user = authenticate_user()
 
-        # find if user has made any predictions yet
-        find_pred = Predictions.query.filter_by(user_email=decoded_token['email']).first()
-        # set new values
         # loop , get game id with teams, get user id and update prediction
         time = datetime.utcnow()
         for game in body.predictions:
@@ -35,25 +32,18 @@ def update_predictions(body: PredictionBody):
                 find_game = Games.query.filter_by(team_a=game.team2, team_b=game.team1).first()
                 if find_game is None:
                     raise UnprocessableEntity("no game found between " + game.team1 + " vs " + game.team2)
-            if find_pred is None:
-                # create new
 
-                new_pred = Predictions(game_id=find_game.id, user_email=find_user.email,
-                                       predicted_score=f'{game.score1}-{game.score2}')
-                new_pred.create()
-                logger.info("New prediction made by user " + str(find_user.email))
+            temp_pred_obj = Predictions.query.filter_by(game_id=find_game.id, user_email=find_user.email).first()
+            if temp_pred_obj is None:
+                temp_pred_obj = Predictions(game_id=find_game.id, user_email=find_user.email,
+                                            predicted_score=f'{game.score1}-{game.score2}',
+                                            prediction_insert_date=time)
+                temp_pred_obj.save()
+                logger.info(f'Created prediction! User: {find_user.email}')
             else:
-                # update
-                # get object
-                temp_pred_obj = Predictions.query.filter_by(game_id=find_game.id, user_email=find_user.email).first()
-                if temp_pred_obj is None:
-                    temp_pred_obj = Predictions(game_id=find_game.id, user_email=find_user.email,
-                                                predicted_score=f'{game.score1}-{game.score2}')
-                    temp_pred_obj.save()
-                    logger.info(f'Created prediction! User: {find_user.email}')
-                else:
-                    temp_pred_obj.update(predicted_score=f'{game.score1}-{game.score2}')
-                    logger.info("Update prediction made by user " + str(find_user.email))
+                temp_pred_obj.update(predicted_score=f'{game.score1}-{game.score2}',
+                                     prediction_modified_date=time)
+                logger.info("Update prediction made by user " + str(find_user.email))
 
     except UnprocessableEntity as e:
         logger.exception(e)
@@ -107,7 +97,7 @@ def get_ranking():
 def get_rounds():
     try:
         authenticate_user()
-        rounds = Rounds.query.all()
+        rounds = Rounds.query.order_by(Rounds.id).all()
 
         if len(rounds) == 0:
             raise BadRequest('No round were found!')
