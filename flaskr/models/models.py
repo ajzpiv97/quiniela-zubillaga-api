@@ -32,8 +32,8 @@ class LoginBody(BaseModel):
 class Game(BaseModel):
     team1: str
     team2: str
-    score1: Union[int, str]
-    score2: Union[int, str]
+    score1: Union[int, None]
+    score2: Union[int, None]
 
 
 class PredictionBody(BaseModel):
