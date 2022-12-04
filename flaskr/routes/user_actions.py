@@ -72,9 +72,13 @@ def get_ranking():
             if rank.total_points != current_points:
                 current_position += 1
 
+            if current_position != rank.current_ranking:
+                rank.update(current_ranking=current_position, past_ranking=rank.current_ranking)
+
             ranking_order.append(
                 {'position': current_position, 'name': rank.name, 'lastName': rank.last_name,
-                 'points': rank.total_points if rank.total_points > -1 else ''})
+                 'points': rank.total_points if rank.total_points > -1 else '',
+                 'positionMove': rank.past_ranking - rank.current_ranking})
 
             current_points = min(rank.total_points, current_points)
 

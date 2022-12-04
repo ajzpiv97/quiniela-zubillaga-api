@@ -17,6 +17,8 @@ class Users(Model):
     total_points = Column(Integer, default=-1, nullable=True)
     is_admin = Column(Boolean, default=False)
     predictions = relationship("Predictions")
+    current_ranking = Column(Integer, nullable=True)
+    past_ranking = Column(Integer, nullable=True)
 
     def __init__(self, **kwargs):
         """Create instance."""
